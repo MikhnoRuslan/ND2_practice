@@ -1,0 +1,42 @@
+﻿@using Ticket_re_sailing.Business.Model
+
+    <ul class="navbar-nav flex-grow-1">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <li class="nav-item">
+                <span class="navbar-text">Hello, @User.Identity.Name!</span>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    My Tickets
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="SellOrders" asp-action="Selling">@Constants.Selling</a>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="SellOrders" asp-action="Sold">@Constants.Sold</a>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="SellOrders" asp-action="Waiting">@Constants.Waiting</a>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    My Orders
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="BuyOrders" asp-action="WaitingForConfirmation">@Constants.WaitingForConfirmation</a>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="BuyOrders" asp-action="Confirmation">@Constants.Confirmation</a>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="BuyOrders" asp-action="Rejected">@Constants.Rejected</a>
+                </div>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Sing In</a>
+            </li>
+        }
+    </ul>
