@@ -1,0 +1,43 @@
+﻿@using TicketReSail.Business.Model
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<ul class="navbar-nav flex-grow-1">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <li class="nav-item">
+            <span class="navbar-text">@Localizer["Hello"], @User.Identity.Name!</span>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">@Localizer["Logout"]</a>
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                @Localizer["My Tickets"]
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <div>@Html.ActionLink(Localizer["Selling"].Value, "SellTicket", "Order", new { status = Localizer["Selling"].Value })</div>
+                <div>@Html.ActionLink(Localizer["Sold"].Value, "SellTicket", "Order", new { status = Localizer["Sold"].Value })</div>
+                <div>@Html.ActionLink(Localizer["Waiting"].Value, "SellTicket", "Order", new { status = Localizer["Waiting"] })</div>
+            </div>
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                @Localizer["My Orders"]
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <div>@Html.ActionLink(Localizer["WaitingForConfirmation"].Value, "BuyTicket", "Order", new { status = Localizer["WaitingForConfirmation"].Value })</div>
+                <div>@Html.ActionLink(Localizer["Confirmation"].Value, "BuyTicket", "Order", new { status = Localizer["Confirmation"].Value })</div>
+                <div>@Html.ActionLink(Localizer["Rejected"].Value, "BuyTicket", "Order", new { status = Localizer["Rejected"].Value })</div>
+            </div>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">@Localizer["Sing In"]</a>
+        </li>}
+</ul>
