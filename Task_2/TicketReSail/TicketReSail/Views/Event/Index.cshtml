@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@model EventsViewModel
+@{
+    ViewData["Title"] = Localizer["Events"];
+}
+
+<form class="form-inline">
+    <label>@Localizer["Enter category"]:&nbsp;</label>
+    <link rel="stylesheet" href="~/css/Style.css" />
+    <select name="categoryId" class="form-control">
+        @foreach (var category in Model.Categories)
+        {
+            <option value="@category.Id">@Localizer[@category.Name]</option>
+        }
+    </select>
+    <label>&nbsp;</label>
+    <input type="submit" value="@Localizer["Send"]" />
+</form>
+
+<div class="container">
+    <div class="row">
+        @foreach (var events in Model.Events)
+        {
+            <div class="pt-5">
+                <div class="col">
+                    <div class="card text-center">
+                        <img src="~/img/@events.Banner" width="235" height="300" alt="@events.Name" />
+                        <div class="card-body">
+                            <strong>
+                                @Html.ActionLink(@events.Name, "Details", "Event",
+                                    new { id = events.Id }, new { @class = "styleNameEvent" })
+                            </strong>
+                            <br><h8>@Localizer["The date of the"]: @events.Date.ToString("dd.MM.yyyy")</h8>
+                            <br><h8>@Localizer["City"]: @events.Venue.City.Name</h8>
+                            <br><h8>@Localizer["Venue"]: @events.Venue.Name</h8>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

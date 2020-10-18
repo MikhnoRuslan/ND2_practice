@@ -1,0 +1,33 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@model OrdersViewModel
+
+@{
+    ViewData["Title"] = Localizer["My Tickets"];
+}
+
+<table class="table">
+    <caption>@Localizer["List of orders"]</caption>
+    <thead>
+        <tr>
+            <th scope="col">@Localizer["Event name"]</th>
+            <th scope="col">@Localizer["Price"]</th>
+            <th scope="col">@Localizer["Seller"]</th>
+            <th scope="col">@Localizer["Buyer"]</th>
+            <th scope="col">@Localizer["Status"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var orders in Model.Orders)
+        {
+            <tr>
+                <td>@orders.Ticket.EventId.Name</td>
+                <td>$@orders.Ticket.Price</td>
+                <td>@orders.Ticket.SellerId.FirstName @orders.Ticket.SellerId.LastName</td>
+                <td>@orders.BuyerId.FirstName @orders.BuyerId.LastName</td>
+                <td>@orders.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>

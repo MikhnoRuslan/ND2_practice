@@ -1,0 +1,23 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@model UserViewModel
+@{
+    ViewData["Title"] = Localizer["User Info"];
+}
+
+<h2>@Localizer["User information"]</h2>
+
+<div class="container">
+    <div class="row">
+        @foreach (var user in Model.Users)
+        {
+            <div class="text-left">
+                <div><strong>@Localizer["First name"]: </strong>@user.FirstName</div>
+                <div><strong>@Localizer["Last name"]: </strong>@user.LastName</div>
+                <div><strong>@Localizer["Address"]: </strong>@user.Address</div>
+                <div><strong>@Localizer["Phone number"]: +</strong>@user.PhoneNumber</div>
+            </div>
+        }
+    </div>
+</div>
