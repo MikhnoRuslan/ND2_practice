@@ -1,11 +1,17 @@
+using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TicketReSail.Business;
+using TicketReSail.Core.Interface;
+using TicketReSail.Core.Models;
+using TicketReSail.DAL;
+using TicketReSail.DAL.Model;
 
 namespace TicketReSail
 {
@@ -35,10 +41,18 @@ namespace TicketReSail
                     opts.Cookie.Name = "AuthDemo";
                 });
 
-            services.AddScoped<EventsRepository>();
-            services.AddScoped<OrderRepository>();
-            services.AddScoped<UserRepository>();
-            services.AddScoped<TicketsRepository>();
+            services.AddDbContext<TicketsContext>(o =>
+                o.UseSqlServer(Configuration.GetConnectionString("TicketConnection")));
+
+            services.AddDefaultIdentity<User>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<TicketsContext>();
+
+            services.AddScoped<IdentityRole>();
+            services.AddScoped<IEventService, EventService>();
+            services.AddScoped<IOrderService, OrderService>();
+            //services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITickerService, TicketService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,11 +83,12 @@ namespace TicketReSail
             app.UseRouting();
 
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "/{controller=Home}/{action=Index}/{id?}");

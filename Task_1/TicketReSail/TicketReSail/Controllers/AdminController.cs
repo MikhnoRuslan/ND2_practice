@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TicketReSail.Business.Model;
+using TicketReSail.DAL.Model;
 
 namespace TicketReSail.Controllers
 {

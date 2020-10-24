@@ -56,8 +56,8 @@
             </div>
             <div class="col-5">
                 <div><strong>@Localizer["Seller"]: </strong>
-                    @Html.ActionLink($"{ticket.Seller.FirstName} {ticket.Seller.LastName}", "Index", "User",
-                        new { id = ticket.Seller.Id }, new { @class = "styleNameEvent" })
+                    @Html.ActionLink($"{ticket.User.FirstName} {ticket.User.LastName}", "Index", "User",
+                        new { id = ticket.User.Id }, new { @class = "styleNameEvent" })
                 </div>
                 <div><strong>@Localizer["Seller`s note"]: </strong></div>
             </div>

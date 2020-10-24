@@ -100,4 +100,11 @@
   <data name="Wrong password!" xml:space="preserve">
     <value>Няправільны пароль!</value>
   </data>
+  <data name="e.Message" xml:space="preserve">
+    <value>Карыстальнік не знойдзены</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+	  <value>Карыстальнік не знойдзены</value>
+	  <comment>Message</comment>
+  </data>
 </root>

@@ -1,4 +1,4 @@
-﻿using TicketReSail.Business.Model;
+﻿using TicketReSail.DAL.Model;
 
 namespace TicketReSail.Models
 {
