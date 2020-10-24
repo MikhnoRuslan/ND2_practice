@@ -1,15 +1,18 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Identity
 @inject IViewLocalizer Localizer
 
 <ul class="navbar-nav flex-grow-1">
     @if (User.Identity.IsAuthenticated)
     {
         <li class="nav-item">
-            <span class="navbar-text">@Localizer["Hello"], @User.Identity.Name!</span>
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@Localizer["Hello"], @User.Identity.Name!</a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">@Localizer["Logout"]</a>
+            <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link text-dark">@Localizer["Logout"]</button>
+            </form>
         </li>
 
         <li class="nav-item dropdown">
@@ -37,6 +40,10 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">@Localizer["Sing In"]</a>
-        </li>}
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">@Localizer["Sing In"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">@Localizer["Register"]</a>
+        </li>
+    }
 </ul>

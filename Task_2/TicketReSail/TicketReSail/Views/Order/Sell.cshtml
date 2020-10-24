@@ -22,10 +22,10 @@
         @foreach (var orders in Model.Orders)
         {
             <tr>
-                <td>@orders.Ticket.EventId.Name</td>
+                <td>@orders.Ticket.Event.Name</td>
                 <td>$@orders.Ticket.Price</td>
-                <td>@orders.Ticket.SellerId.FirstName @orders.Ticket.SellerId.LastName</td>
-                <td>@orders.BuyerId.FirstName @orders.BuyerId.LastName</td>
+                <td>@orders.Ticket.User.FirstName @orders.Ticket.User.LastName</td>
+                <td>@orders.User.FirstName @orders.User.LastName</td>
                 <td>@orders.Status</td>
             </tr>
         }

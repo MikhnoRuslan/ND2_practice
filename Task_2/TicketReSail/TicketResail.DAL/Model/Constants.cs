@@ -2,8 +2,12 @@
 {
     public class Constants
     {
+        public const string Password = "P123w12p!";
+        public const string Email = "r.mikhno92@gmail.ru";
+
         public const string Administrator = "Admin";
         public const string User = "User";
+        public const string Moderator = "Moderator";
 
         public const string Selling = "Selling";
         public const string Waiting = "Waiting confirmation";

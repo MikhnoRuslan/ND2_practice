@@ -141,4 +141,8 @@
 		<value>Rejected</value>
 		<comment>Rejected</comment>
 	</data>
+  <data name="Register" xml:space="preserve">
+	  <value>Register</value>
+	  <comment>Register</comment>
+  </data>
 </root>

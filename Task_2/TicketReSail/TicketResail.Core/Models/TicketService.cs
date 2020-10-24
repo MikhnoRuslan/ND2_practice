@@ -24,7 +24,7 @@ namespace TicketReSail.Core.Models
 
         public async Task<IEnumerable<Ticket>> GetTicketsByUserLogin(string login)
         {
-            return await _context.Tickets.Where(u => u.SellerId.Login.Equals(login)).ToListAsync();
+            return await _context.Tickets.Where(u => u.User.Login.Equals(login)).ToListAsync();
         }
     }
 }

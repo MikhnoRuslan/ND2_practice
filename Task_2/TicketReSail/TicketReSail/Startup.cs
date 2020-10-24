@@ -1,6 +1,8 @@
+using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.Models;
 using TicketReSail.DAL;
+using TicketReSail.DAL.Model;
 
 namespace TicketReSail
 {
@@ -41,9 +44,14 @@ namespace TicketReSail
             services.AddDbContext<TicketsContext>(o =>
                 o.UseSqlServer(Configuration.GetConnectionString("TicketConnection")));
 
+            services.AddDefaultIdentity<User>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<TicketsContext>();
+
+            services.AddScoped<IdentityRole>();
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IOrderService, OrderService>();
-            services.AddScoped<IUserService, UserService>();
+            //services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITickerService, TicketService>();
         }
 
@@ -75,11 +83,12 @@ namespace TicketReSail
             app.UseRouting();
 
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "/{controller=Home}/{action=Index}/{id?}");

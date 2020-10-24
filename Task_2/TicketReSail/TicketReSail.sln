@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketReSail", "TicketReSail\TicketReSail.csproj", "{46B72BE3-A427-4870-9FB5-BA523931F81C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketReSail.Core", "TicketResail.Core\TicketReSail.Core.csproj", "{1049AE9A-9AC5-4211-8AA0-2DAA4E54BBE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketReSail.Core", "TicketResail.Core\TicketReSail.Core.csproj", "{1049AE9A-9AC5-4211-8AA0-2DAA4E54BBE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketReSail.DAL", "TicketResail.DAL\TicketReSail.DAL.csproj", "{0795DEB1-4588-48C7-A06F-2968545A352B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketReSail.DAL", "TicketResail.DAL\TicketReSail.DAL.csproj", "{0795DEB1-4588-48C7-A06F-2968545A352B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

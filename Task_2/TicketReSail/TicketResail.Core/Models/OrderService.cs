@@ -24,7 +24,7 @@ namespace TicketReSail.Core.Models
 
         public async Task<IEnumerable<Ticket>> GetTicketsByIdEvents(int id)
         {
-            var tickets = _context.Tickets.Where(t => t.EventId.Id.Equals(id));
+            var tickets = _context.Tickets.Where(t => t.Event.Id.Equals(id));
             return await tickets.ToListAsync();
         }
 
@@ -35,7 +35,7 @@ namespace TicketReSail.Core.Models
 
         public async Task<IEnumerable<Order>> GetOrdersByUserLogin(string login)
         {
-            return await _context.Orders.Where(o => o.BuyerId.Login.Equals(login)).ToListAsync();
+            return await _context.Orders.Where(o => o.User.Login.Equals(login)).ToListAsync();
         }
     }
 }

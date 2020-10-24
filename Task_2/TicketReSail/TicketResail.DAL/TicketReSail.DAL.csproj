@@ -1,10 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20201022133307_Identity.cs" />
+    <Compile Remove="Migrations\20201022133307_Identity.Designer.cs" />
+    <Compile Remove="Migrations\20201022134317_Identity.cs" />
+    <Compile Remove="Migrations\20201022134317_Identity.Designer.cs" />
+    <Compile Remove="Migrations\20201022134703_Identity.cs" />
+    <Compile Remove="Migrations\20201022134703_Identity.Designer.cs" />
+    <Compile Remove="Migrations\20201022134855_Identity.cs" />
+    <Compile Remove="Migrations\20201022134855_Identity.Designer.cs" />
+    <Compile Remove="Migrations\20201022134924_Identity.cs" />
+    <Compile Remove="Migrations\20201022134924_Identity.Designer.cs" />
+    <Compile Remove="Migrations\20201022135449_First.cs" />
+    <Compile Remove="Migrations\20201022135449_First.Designer.cs" />
+    <Compile Remove="Migrations\20201023180909_DeletePassword.cs" />
+    <Compile Remove="Migrations\20201023180909_DeletePassword.Designer.cs" />
+    <Compile Remove="Migrations\20201023181614_DeletePassword.cs" />
+    <Compile Remove="Migrations\20201023181614_DeletePassword.Designer.cs" />
+    <Compile Remove="Migrations\20201023181906_DeletePassword.cs" />
+    <Compile Remove="Migrations\20201023181906_DeletePassword.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.9" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
   </ItemGroup>

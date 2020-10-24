@@ -1,25 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TicketReSail.DAL.Model;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace TicketReSail.DAL
 {
-    public sealed class TicketsContext : DbContext
+    public sealed class TicketsContext : IdentityDbContext<User>
     {
         public TicketsContext(DbContextOptions<TicketsContext> options) : base(options)
         {
-
+            
         }
+
         public DbSet<Category> Categories { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
-        public DbSet<User> Users { get; set; }
         public DbSet<Venue> Venues { get; set; }
 
         protected override void OnModelCreating(ModelBuilder model)
         {
-            model.Entity<Category>().ToTable("Categories");
+            base.OnModelCreating(model);
+
+            model.Entity<Category>().ToTable("Category");
 
             model.Entity<City>().ToTable("Cities");
 
@@ -30,13 +33,12 @@ namespace TicketReSail.DAL
             model.Entity<Order>().ToTable("Orders");
 
             model.Entity<Ticket>().ToTable("Tickets")
-                .HasOne(t => t.EventId)
+                .HasOne(t => t.Event)
                 .WithMany(e => e.Tickets);
-            model.Entity<Ticket>()
-                .HasOne(t => t.EventId)
-                .WithMany(u => u.Tickets);
 
-            model.Entity<User>().ToTable("Users");
+            model.Entity<Ticket>()
+                .HasOne(t => t.Event)
+                .WithMany(u => u.Tickets);
 
             model.Entity<Venue>().ToTable("Venues")
                 .HasOne(v => v.City)

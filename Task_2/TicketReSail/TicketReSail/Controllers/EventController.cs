@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using TicketReSail.Core.Interface;
+using TicketReSail.DAL;
 using TicketReSail.DAL.Model;
 using TicketReSail.Models;
 
@@ -13,16 +14,22 @@ namespace TicketReSail.Controllers
         private readonly IEventService _eventService;
         private readonly IOrderService _orderService;
         private readonly IStringLocalizer<EventController> _localizer;
+        private readonly TicketsContext _context;
 
-        public EventController(IEventService eventService, IOrderService orderService, IStringLocalizer<EventController> localizer)
+        public EventController(IEventService eventService, IOrderService orderService, IStringLocalizer<EventController> localizer,
+            TicketsContext context)
         {
             _eventService = eventService;
             _orderService = orderService;
             _localizer = localizer;
+            _context = context;
         }
 
         public async Task<IActionResult> Index(int? categoryId)
         {
+            //await _context.Database.EnsureDeletedAsync();
+            //await _context.Database.EnsureCreatedAsync();
+
             var categories = (await _eventService.GetCategories()).ToList()
                 .Select(c => new Category { Id = c.Id, Name = c.Name }).ToList();
 

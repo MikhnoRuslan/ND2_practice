@@ -1,8 +1,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TicketReSail.DAL;
+using TicketReSail.DAL.Model;
 
 namespace TicketReSail
 {
@@ -13,8 +15,10 @@ namespace TicketReSail
             var host = CreateHostBuilder(args).Build();
             using var scope = host.Services.CreateScope();
             var services = scope.ServiceProvider;
-            var context = services.GetRequiredService<TicketsContext>();
-            var seeder = new DataSeeder(context);
+            var contextTicket = services.GetRequiredService<TicketsContext>();
+            var contextUser = services.GetRequiredService<UserManager<User>>();
+            var contextRole = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var seeder = new DataSeeder(contextTicket, contextUser, contextRole);
             await seeder.SeedDataAsync();
             await host.RunAsync();
         }

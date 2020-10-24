@@ -6,7 +6,6 @@ namespace TicketReSail.DAL.Model
     public class Event
     {
         public int Id { get; set; }
-        public Category CategoryId { get; set; }
         public string Name { get; set; }
         public DateTime Date { get; set; }
         public Venue Venue { get; set; }

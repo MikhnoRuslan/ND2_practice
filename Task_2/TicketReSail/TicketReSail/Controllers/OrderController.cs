@@ -20,7 +20,7 @@ namespace TicketReSail.Controllers
             var orders = new OrdersViewModel
             {
                 Orders = (await _orderService.GetOrders()).ToArray()
-                    .Where(u => u.BuyerId.Login.Equals(User.Identity.Name))
+                    .Where(u => u.User.Login.Equals(User.Identity.Name))
                     .Where(o => o.Status.Equals(status)).ToList()
             };
 
@@ -32,7 +32,7 @@ namespace TicketReSail.Controllers
             var orders = new OrdersViewModel
             {
                 Orders = (await _orderService.GetOrders()).ToList()
-                    .Where(u => u.Ticket.SellerId.Login.Equals(User.Identity.Name))
+                    .Where(u => u.Ticket.User.Login.Equals(User.Identity.Name))
                     .Where(o => o.Status.Equals(status)).ToList()
             };
 
