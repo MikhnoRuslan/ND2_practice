@@ -57,7 +57,7 @@ namespace TicketReSail.DAL.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -70,7 +70,7 @@ namespace TicketReSail.DAL.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -189,9 +189,9 @@ namespace TicketReSail.DAL.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: true),
-                    Address = table.Column<string>(nullable: true),
-                    CityId = table.Column<int>(nullable: true)
+                    Name = table.Column<string>(nullable: false),
+                    Address = table.Column<string>(nullable: false),
+                    CityId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -201,7 +201,7 @@ namespace TicketReSail.DAL.Migrations
                         column: x => x.CityId,
                         principalTable: "Cities",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -210,12 +210,12 @@ namespace TicketReSail.DAL.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
-                    VenueId = table.Column<int>(nullable: true),
-                    Banner = table.Column<string>(nullable: true),
+                    VenueId = table.Column<int>(nullable: false),
+                    Banner = table.Column<byte[]>(nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    CategoryId = table.Column<int>(nullable: true)
+                    CategoryId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -225,13 +225,13 @@ namespace TicketReSail.DAL.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Category",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Events_Venues_VenueId",
                         column: x => x.VenueId,
                         principalTable: "Venues",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -241,8 +241,9 @@ namespace TicketReSail.DAL.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Price = table.Column<decimal>(type: "money", nullable: false),
-                    EventId = table.Column<int>(nullable: true),
-                    UserId = table.Column<string>(nullable: true)
+                    EventId = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false),
+                    UserId1 = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -252,10 +253,10 @@ namespace TicketReSail.DAL.Migrations
                         column: x => x.EventId,
                         principalTable: "Events",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Tickets_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Tickets_AspNetUsers_UserId1",
+                        column: x => x.UserId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -269,8 +270,9 @@ namespace TicketReSail.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Status = table.Column<string>(nullable: true),
                     Track = table.Column<int>(nullable: false),
-                    TicketId = table.Column<int>(nullable: true),
-                    UserId = table.Column<string>(nullable: true)
+                    TicketId = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false),
+                    UserId1 = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -280,10 +282,10 @@ namespace TicketReSail.DAL.Migrations
                         column: x => x.TicketId,
                         principalTable: "Tickets",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Orders_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Orders_AspNetUsers_UserId1",
+                        column: x => x.UserId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -344,9 +346,9 @@ namespace TicketReSail.DAL.Migrations
                 column: "TicketId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_UserId",
+                name: "IX_Orders_UserId1",
                 table: "Orders",
-                column: "UserId");
+                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_EventId",
@@ -354,9 +356,9 @@ namespace TicketReSail.DAL.Migrations
                 column: "EventId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_UserId",
+                name: "IX_Tickets_UserId1",
                 table: "Tickets",
-                column: "UserId");
+                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Venues_CityId",

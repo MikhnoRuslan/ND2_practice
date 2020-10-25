@@ -6,6 +6,8 @@
     ViewData["Title"] = Localizer["Events"];
 }
 
+<a asp-action="CreateEvent">Create event</a>
+
 <form class="form-inline">
     <label>@Localizer["Enter category"]:&nbsp;</label>
     <link rel="stylesheet" href="~/css/Style.css" />
@@ -26,7 +28,7 @@
             <div class="pt-5">
                 <div class="col">
                     <div class="card text-center">
-                        <img src="~/img/@events.Banner" width="235" height="300" alt="@events.Name" />
+                        <img src="@Url.Action("GetImage", new {id = events.Id})" width="235" height="300" alt="@events.Name" />
                         <div class="card-body">
                             <strong>
                                 @Html.ActionLink(@events.Name, "Details", "Event",
@@ -34,7 +36,7 @@
                             </strong>
                             <br><h8>@Localizer["The date of the"]: @events.Date.ToString("dd.MM.yyyy")</h8>
                             <br><h8>@Localizer["City"]: @events.Venue.City.Name</h8>
-                            <br><h8>@Localizer["Venue"]: @events.Venue.Name</h8>
+                            <br><h8>@Localizer["Venue"]: @events.Venue.Address</h8>
                         </div>
                     </div>
                 </div>

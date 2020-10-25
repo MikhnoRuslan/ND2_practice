@@ -51,8 +51,11 @@ namespace TicketReSail
             services.AddScoped<IdentityRole>();
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IOrderService, OrderService>();
-            //services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITickerService, TicketService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IVenueService, VenueService>();
+            services.AddScoped<ICityService, CityService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

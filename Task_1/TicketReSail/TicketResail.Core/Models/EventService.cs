@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TicketReSail.Core.Interface;
@@ -21,24 +22,14 @@ namespace TicketReSail.Core.Models
             return await _context.Events.FindAsync(id);
         }
 
-        public async Task<IEnumerable<Category>> GetCategories()
-        {
-            return await _context.Categories.ToListAsync();
-        }
-
         public async Task<IEnumerable<City>> GetCities()
         {
             return await _context.Cities.ToListAsync();
         }
 
-        public async Task<IEnumerable<Venue>> GetVenues()
+        public IEnumerable<Event> GetEvents()
         {
-            return await _context.Venues.ToListAsync();
-        }
-
-        public async Task<IEnumerable<Event>> GetEvents()
-        {
-            return await _context.Events.ToListAsync();
+            return  _context.Events.ToList();
         }
     }
 }

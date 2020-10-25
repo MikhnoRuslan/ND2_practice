@@ -8,7 +8,6 @@ namespace TicketReSail.DAL
     {
         public TicketsContext(DbContextOptions<TicketsContext> options) : base(options)
         {
-            
         }
 
         public DbSet<Category> Categories { get; set; }
@@ -37,7 +36,7 @@ namespace TicketReSail.DAL
                 .WithMany(e => e.Tickets);
 
             model.Entity<Ticket>()
-                .HasOne(t => t.Event)
+                .HasOne(t => t.User)
                 .WithMany(u => u.Tickets);
 
             model.Entity<Venue>().ToTable("Venues")

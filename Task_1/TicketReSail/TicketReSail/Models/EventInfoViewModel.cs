@@ -6,6 +6,6 @@ namespace TicketReSail.Models
     public class EventInfoViewModel
     {
         public List<Ticket> Tickets { get; set; }
-        public Event Events { get; set; }
+        public Event Event { get; set; }
     }
 }

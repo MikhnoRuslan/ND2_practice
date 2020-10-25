@@ -3,7 +3,8 @@
     public class Constants
     {
         public const string Password = "P123w12p!";
-        public const string Email = "r.mikhno92@gmail.ru";
+        public const string Email = "r.mikhno92@gmail.com";
+        public const string EmailPassword = "23e34r45t";
 
         public const string Administrator = "Admin";
         public const string User = "User";

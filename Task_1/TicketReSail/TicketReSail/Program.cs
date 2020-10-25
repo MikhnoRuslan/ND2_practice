@@ -15,10 +15,11 @@ namespace TicketReSail
             var host = CreateHostBuilder(args).Build();
             using var scope = host.Services.CreateScope();
             var services = scope.ServiceProvider;
-            var contextTicket = services.GetRequiredService<TicketsContext>();
+            
             var contextUser = services.GetRequiredService<UserManager<User>>();
             var contextRole = services.GetRequiredService<RoleManager<IdentityRole>>();
-            var seeder = new DataSeeder(contextTicket, contextUser, contextRole);
+
+            var seeder = new DataSeeder(contextUser, contextRole);
             await seeder.SeedDataAsync();
             await host.RunAsync();
         }
