@@ -1,0 +1,21 @@
+﻿@using TicketReSail.DAL.Model
+@using TicketReSail.Core.Interface
+
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <div class="text-center">
+                <div class="btn btn-outline-primary">@Html.ActionLink(Constants.WaitingForConfirmation, "Buy", "Order",
+                                                         new { status = Constants.Waiting})</div>
+            </div>
+            <div class="text-center">
+                <div class="btn btn-outline-primary">@Html.ActionLink(Constants.Confirmed, "Confirmed", "Order",
+                                                         new {status = Constants.Confirmed })</div>
+            </div>
+            <div class="text-center">
+                <div class="btn btn-outline-primary">@Html.ActionLink(Constants.Rejected, "Rejected", "Order", 
+                                                        new {status = Constants.Rejected})</div>
+            </div>
+        </div>
+    </div>
+</div>

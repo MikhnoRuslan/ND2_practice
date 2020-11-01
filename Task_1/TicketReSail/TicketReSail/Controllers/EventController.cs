@@ -1,11 +1,10 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Localization;
 using TicketReSail.Core.Interface;
-using TicketReSail.DAL;
+using TicketReSail.Core.ModelDTO;
 using TicketReSail.DAL.Model;
 using TicketReSail.Models;
 
@@ -14,40 +13,35 @@ namespace TicketReSail.Controllers
     public class EventController : Controller
     {
         private readonly IEventService _eventService;
+        private readonly IAction<EventDTO> _action;
         private readonly IVenueService _venueService;
-        private readonly IOrderService _orderService;
         private readonly ICategoryService _categoryService;
-        private readonly IStringLocalizer<EventController> _localizer;
-        private readonly TicketsContext _context;
 
-        public EventController(IEventService eventService, IOrderService orderService, IStringLocalizer<EventController> localizer,
-            TicketsContext context, ICategoryService categoryService, IVenueService venueService)
+        public EventController(IEventService eventService,
+            ICategoryService categoryService, IVenueService venueService,
+            IAction<EventDTO> action)
         {
             _eventService = eventService;
-            _orderService = orderService;
-            _localizer = localizer;
-            _context = context;
             _categoryService = categoryService;
             _venueService = venueService;
+            _action = action;
         }
 
         public async Task<IActionResult> Index(int? categoryId)
         {
-            var categories = (_categoryService.GetCategories()).ToList()
+            var categories = (await _categoryService.GetCategories()).ToList()
                 .Select(c => new Category { Id = c.Id, Name = c.Name }).ToList();
 
-            categories.Insert(0, new Category { Id = 0, Name = _localizer["All"] });
+            categories.Insert(0, new Category { Id = 0, Name = "All" });
 
             var eventsViewModel = new EventsViewModel
             {
                 Categories = categories,
-                Cities = (await _eventService.GetCities()).ToArray(),
-                Venues = _venueService.GetVenues().ToArray(),
-                Events = _eventService.GetEvents().ToArray()
+                Events = (await _eventService.GetEvents()).ToArray()
             };
 
             if (categoryId != null && categoryId > 0)
-                eventsViewModel.Events = _eventService.GetEvents().ToArray()
+                eventsViewModel.Events = (await _eventService.GetEvents())
                     .Where(e => e.Category.Id == categoryId).ToArray();
 
             return View(eventsViewModel);
@@ -55,61 +49,65 @@ namespace TicketReSail.Controllers
 
         public async Task<IActionResult> Details([FromRoute] int id)
         {
-            var eventInfo = new EventInfoViewModel()
+            var eventInfo = new EventsViewModel()
             {
-                Tickets = (await _orderService.GetTicketsByIdEvents(id)).ToList(),
-                Event = await _context.Events.FindAsync(id)
+                Tickets = (await _eventService.GetTicketsByIdEvents(id)).ToList(),
+                Event = (await _eventService.GetEventById(id)),
+                VenueId = id
             };
 
             return View("Details", eventInfo);
         }
 
-        public IActionResult CreateEvent()
+        public async Task<IActionResult> CreateEvent()
         {
-            ViewBag.Categories = new SelectList(_context.Categories, "Id", "Name");
-            ViewBag.Venues = new SelectList(_context.Venues, "Id", "Name");
+            ViewBag.Categories = new SelectList(await _categoryService.GetCategories(), "Id", "Name");
+            ViewBag.Venues = new SelectList(await _venueService.GetVenues(), "Id", "Name");
 
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateEvent(EditorEventViewModel eventView)
+        [Authorize(Roles = Constants.Administrator)]
+        public async Task<IActionResult> CreateEvent(EventsViewModel eventView)
         {
             if (ModelState.IsValid)
             {
-                var @event = new Event
+                var eventDto = new EventDTO
                 {
                     Name = eventView.Name,
                     CategoryId = eventView.CategoryId,
-                    Date = eventView.Date,
+                    DateTime = eventView.Date,
+                    VenueId = eventView.VenueId,
                     Description = eventView.Description,
-                    VenueId = eventView.VenueId
+                    Banner = eventView.Banner
                 };
 
-                if (eventView.Banner != null)
+                var operationDetails = await _action.Create(eventDto);
+                if (operationDetails.Succeeded)
+                    return RedirectToAction("Index");
+                else
                 {
-                    byte[] imageData;
-
-                    using (var binaryReader = new BinaryReader(eventView.Banner.OpenReadStream()))
-                    {
-                        imageData = binaryReader.ReadBytes((int)eventView.Banner.Length);
-                    }
-
-                    @event.Banner = imageData;
+                    ModelState.AddModelError(operationDetails.Property, operationDetails.Message);
+                    return View();
                 }
-
-                await _context.Events.AddAsync(@event);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("Index", "Admin");
             }
 
             return NotFound();
         }
 
-        public FileContentResult GetImage(int id)
+        [HttpPost]
+        [Authorize(Roles = Constants.Administrator)]
+        public async Task<IActionResult> DeleteEvent(int id)
         {
-            var @event = _context.Events.FirstOrDefault(e => e.Id == id);
+            await _action.Delete(id);
+
+            return RedirectToAction("Index");
+        }
+
+        public async Task<FileContentResult> GetImage(int id)
+        {
+            var @event = await _eventService.GetEventById(id);
 
             return @event != null ? File(@event.Banner, "image/jpg") : null;
         }

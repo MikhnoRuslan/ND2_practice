@@ -222,6 +222,24 @@ namespace TicketReSail.DAL.Migrations
                     b.ToTable("Events");
                 });
 
+            modelBuilder.Entity("TicketReSail.DAL.Model.Localization", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<byte[]>("Image")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Localizations");
+                });
+
             modelBuilder.Entity("TicketReSail.DAL.Model.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -235,20 +253,17 @@ namespace TicketReSail.DAL.Migrations
                     b.Property<int>("TicketId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Track")
-                        .HasColumnType("int");
+                    b.Property<Guid>("Track")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserIdBuyer")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TicketId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserIdBuyer");
 
                     b.ToTable("Orders");
                 });
@@ -260,23 +275,27 @@ namespace TicketReSail.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("Bought")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("money");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserIdSeller")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserIdSeller");
 
                     b.ToTable("Tickets");
                 });
@@ -309,8 +328,8 @@ namespace TicketReSail.DAL.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Localization")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("LocalizationId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -349,6 +368,8 @@ namespace TicketReSail.DAL.Migrations
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocalizationId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -462,7 +483,7 @@ namespace TicketReSail.DAL.Migrations
 
                     b.HasOne("TicketReSail.DAL.Model.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserIdBuyer");
                 });
 
             modelBuilder.Entity("TicketReSail.DAL.Model.Ticket", b =>
@@ -475,7 +496,18 @@ namespace TicketReSail.DAL.Migrations
 
                     b.HasOne("TicketReSail.DAL.Model.User", "User")
                         .WithMany("Tickets")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserIdSeller")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TicketReSail.DAL.Model.User", b =>
+                {
+                    b.HasOne("TicketReSail.DAL.Model.Localization", "Localization")
+                        .WithMany("Users")
+                        .HasForeignKey("LocalizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TicketReSail.DAL.Model.Venue", b =>

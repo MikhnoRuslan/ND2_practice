@@ -10,13 +10,16 @@ namespace TicketReSail.DAL.Model
         [Required]
         [Column(TypeName = "money")]
         public decimal Price { get; set; }
+        public bool Bought { get; set; }
+        public string Description { get; set; }
 
         [Required]
         public int EventId { get; set; }
         public Event Event { get; set; }
 
         [Required]
-        public int UserId { get; set; }
+        public string UserIdSeller { get; set; }
+        [ForeignKey("UserIdSeller")]
         public User User { get; set; }
     }
 }

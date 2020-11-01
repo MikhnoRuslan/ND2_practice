@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TicketReSail.Core.Interface;
-using TicketReSail.DAL;
-using TicketReSail.DAL.Model;
+using TicketReSail.Core.ModelDTO;
 using TicketReSail.Models;
 
 namespace TicketReSail.Controllers
@@ -10,17 +9,17 @@ namespace TicketReSail.Controllers
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
-        private readonly TicketsContext _context;
+        private readonly IAction<CategoryDTO> _action;
 
-        public CategoryController(ICategoryService categoryService, TicketsContext context)
+        public CategoryController(ICategoryService categoryService, IAction<CategoryDTO> action)
         {
             _categoryService = categoryService;
-            _context = context;
+            _action = action;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_categoryService.GetCategories());
+            return View(await _categoryService.GetCategories());
         }
 
         public IActionResult CreateCategory()
@@ -29,27 +28,30 @@ namespace TicketReSail.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory(CategoryViewModel categoryView, string returnUrl)
+        public async Task<IActionResult> CreateCategory(CategoryViewModel categoryView)
         {
-            if (!ModelState.IsValid) return Redirect(returnUrl);
-            var category = new Category { Name = categoryView.Name };
-            var result = await _context.Categories.AddAsync(category);
-            if (result != null)
-                await _context.SaveChangesAsync();
+            if (ModelState.IsValid)
+            {
+                var categoryDto = new CategoryDTO{Name = categoryView.Name};
+                var operationDetails = await _action.Create(categoryDto);
+                if (operationDetails.Succeeded)
+                    return RedirectToAction("Index");
+                else
+                {
+                    ModelState.AddModelError(operationDetails.Property, operationDetails.Message);
+                    return View();
+                }
+            }
 
-            return RedirectToAction("Index", "Category");
+            return NotFound();
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
-                _context.Categories.Remove(category);
+            await _action.Delete(id);
 
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Index", "Category");
+            return RedirectToAction("Index");
         }
     }
 }

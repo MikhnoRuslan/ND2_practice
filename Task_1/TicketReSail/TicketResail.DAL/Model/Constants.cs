@@ -7,7 +7,7 @@
         public const string EmailPassword = "23e34r45t";
 
         public const string Administrator = "Admin";
-        public const string User = "User";
+        public const string Employee = "User";
         public const string Moderator = "Moderator";
 
         public const string Selling = "Selling";
@@ -15,7 +15,7 @@
         public const string Sold = "Sold";
 
         public const string WaitingForConfirmation = "Waiting for confirmation";
-        public const string Confirmation = "Confirmation";
+        public const string Confirmed = "Confirmed";
         public const string Rejected = "Rejected";
     }
 }

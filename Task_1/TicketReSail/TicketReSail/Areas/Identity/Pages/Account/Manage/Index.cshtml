@@ -1,8 +1,11 @@
 ﻿@page
+@using TicketReSail.Core.Interface
 @model IndexModel
+@inject ILocalizationService Localization
 @{
     ViewData["Title"] = "Profile";
     ViewData["ActivePage"] = ManageNavPages.Index;
+    var list = new SelectList(Localization.GetLocalization(), "Id", "Name");
 }
 
 <h4>@ViewData["Title"]</h4>
@@ -19,6 +22,16 @@
                 <label asp-for="Input.PhoneNumber"></label>
                 <input asp-for="Input.PhoneNumber" class="form-control" />
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Address"></label>
+                <input asp-for="Input.Address" class="form-control" />
+                <span asp-validation-for="Input.Address" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="Input.LocalizationId">Localization</label>
+                <select asp-for="Input.LocalizationId" asp-items="list" class="form-control"></select>
+                <span asp-validation-for="Input.LocalizationId" class="text-danger"></span>
             </div>
             <button id="update-profile-button" type="submit" class="btn btn-primary">Save</button>
         </form>

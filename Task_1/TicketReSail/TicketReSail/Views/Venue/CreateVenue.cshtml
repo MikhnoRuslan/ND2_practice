@@ -1,4 +1,5 @@
-﻿@model VenueViewModel
+﻿@using TicketReSail.Core.Interface
+@model VenueViewModel
 
 @{
     ViewData["Title"] = "Create Venue";
@@ -10,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="CreateVenue" enctype="multipart/form-data">
+        <form asp-action="CreateVenue" >
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -23,7 +24,7 @@
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div>
-                <label asp-for="CityId"></label>
+                <label asp-for="CityId">City</label>
                 <select asp-for="CityId" asp-items="ViewBag.Cities" class="form-control"></select>
                 <span asp-validation-for="CityId" class="text-danger"></span>
             </div>

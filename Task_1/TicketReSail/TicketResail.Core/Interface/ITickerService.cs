@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using TicketReSail.DAL.Model;
+﻿using TicketReSail.DAL.Model;
 
 namespace TicketReSail.Core.Interface
 {
     public interface ITickerService
     {
-        Task<IEnumerable<Ticket>> GetTickets();
-        Task<IEnumerable<Ticket>> GetTicketsByUserLogin(string login);
+        int GetEventIdByTicketId(int ticketId);
+        decimal GetPriceByTicketId(int ticketId);
+        int GetLastTicketIdByUserName();
+        Ticket GetTicketById(int ticketId);
     }
 }

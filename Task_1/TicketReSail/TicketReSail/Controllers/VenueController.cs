@@ -2,32 +2,32 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TicketReSail.Core.Interface;
-using TicketReSail.DAL;
-using TicketReSail.DAL.Model;
+using TicketReSail.Core.ModelDTO;
 using TicketReSail.Models;
 
 namespace TicketReSail.Controllers
 {
     public class VenueController : Controller
     {
-        private readonly TicketsContext _context;
         private readonly IVenueService _venueService;
-        
+        private readonly ICityService _cityService;
+        private readonly IAction<VenueDTO> _action;
 
-        public VenueController(TicketsContext context, IVenueService venueService)
+        public VenueController(IVenueService venueService, ICityService cityService, IAction<VenueDTO> action)
         {
-            _context = context;
             _venueService = venueService;
+            _cityService = cityService;
+            _action = action;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_venueService.GetVenues());
+            return View(await _venueService.GetVenues());
         }
 
-        public IActionResult CreateVenue()
+        public async Task<IActionResult> CreateVenue()
         {
-            ViewBag.Cities = new SelectList(_context.Cities, "Id", "Name");
+            ViewBag.Cities = new SelectList(await _cityService.GetCities(), "Id", "Name");
             
             return View();
         }
@@ -37,18 +37,21 @@ namespace TicketReSail.Controllers
         {
             if (ModelState.IsValid)
             {
-                var venue = new Venue
+                var venueDto = new VenueDTO
                 {
                     Name = venueView.Name,
                     Address = venueView.Address,
                     CityId = venueView.CityId
                 };
-                var result = await _context.Venues.AddAsync(venue);
 
-                if (result != null)
-                    await _context.SaveChangesAsync();
-
-                return RedirectToAction("Index");
+                var operationDetails = await _action.Create(venueDto);
+                if (operationDetails.Succeeded)
+                    return RedirectToAction("Index");
+                else
+                {
+                    ModelState.AddModelError(operationDetails.Property, operationDetails.Message);
+                    return View();
+                }
             }
 
             return NotFound();
@@ -57,11 +60,7 @@ namespace TicketReSail.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteVenue(int id)
         {
-            var venue = await _context.Venues.FindAsync(id);
-            if (venue != null)
-                _context.Venues.Remove(venue);
-
-            await _context.SaveChangesAsync();
+            await _action.Delete(id);
 
             return RedirectToAction("Index");
         }

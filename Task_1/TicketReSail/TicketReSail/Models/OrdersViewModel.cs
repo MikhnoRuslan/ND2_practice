@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using TicketReSail.DAL.Model;
-
-namespace TicketReSail.Models
+﻿namespace TicketReSail.Models
 {
     public class OrdersViewModel
     {
-        public List<Order> Orders { get; set; }
+        public string Status { get; set; }
+        public int TicketId { get; set; }
+        public string UserId { get; set; }
     }
 }

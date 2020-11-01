@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TicketReSail.Core.Interface;
-using TicketReSail.DAL;
-using TicketReSail.DAL.Model;
+using TicketReSail.Core.ModelDTO;
 using TicketReSail.Models;
 
 namespace TicketReSail.Controllers
@@ -10,17 +9,17 @@ namespace TicketReSail.Controllers
     public class CityController : Controller
     {
         private readonly ICityService _cityService;
-        private readonly TicketsContext _context;
+        private readonly IAction<CityDTO> _action;
 
-        public CityController(ICityService cityService, TicketsContext context)
+        public CityController(ICityService cityService, IAction<CityDTO> action)
         {
             _cityService = cityService;
-            _context = context;
+            _action = action;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_cityService.GetCities());
+            return View(await _cityService.GetCities());
         }
 
         public IActionResult CreateCity()
@@ -31,25 +30,28 @@ namespace TicketReSail.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCity(CityViewModel cityView, string returnUrl)
         {
-            if (!ModelState.IsValid) return Redirect(returnUrl);
-            var city = new City { Name = cityView.Name };
-            var result = await _context.Cities.AddAsync(city);
-            if (result != null)
-                await _context.SaveChangesAsync();
+            if (ModelState.IsValid)
+            {
+                var cityDto = new CityDTO{Name = cityView.Name};
+                var operationDetails = await _action.Create(cityDto);
+                if (operationDetails.Succeeded)
+                    return RedirectToAction("Index");
+                else
+                {
+                    ModelState.AddModelError(operationDetails.Property, operationDetails.Message);
+                    return View();
+                }
+            }
 
-            return RedirectToAction("Index");
+            return NotFound("Index");
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteCity(int id)
         {
-            var city = await _context.Cities.FindAsync(id);
-            if (city != null)
-                _context.Cities.Remove(city);
+            await _action.Delete(id);
 
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Index", "Category");
+            return RedirectToAction("Index");
         }
     }
 }

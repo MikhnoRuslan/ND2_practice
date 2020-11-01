@@ -60,6 +60,21 @@ namespace TicketReSail.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            public string Login { get; set; }
+
+            [Required]
+            public string FirstName { get; set; }
+
+            [Required]
+            public string LastName { get; set; }
+
+            [Required]
+            public string PhoneNumber { get; set; }
+
+            [Required]
+            public int LocalizationId { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -74,11 +89,21 @@ namespace TicketReSail.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = Input.Email, Email = Input.Email };
+                var user = new User 
+                { 
+                    UserName = Input.Email,
+                    Email = Input.Email,
+                    Login = Input.Login,
+                    FirstName = Input.FirstName,
+                    LastName = Input.LastName,
+                    PhoneNumber = Input.PhoneNumber,
+                    LocalizationId = 3
+                };
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "Employee");
+                    await _userManager.AddToRoleAsync(user, Constants.Employee);
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

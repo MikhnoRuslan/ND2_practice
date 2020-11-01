@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace TicketReSail.DAL
 {
-    public sealed class TicketsContext : IdentityDbContext<User>
+    public class TicketsContext : IdentityDbContext<User>
     {
         public TicketsContext(DbContextOptions<TicketsContext> options) : base(options)
         {
@@ -16,6 +16,7 @@ namespace TicketReSail.DAL
         public DbSet<Order> Orders { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Venue> Venues { get; set; }
+        public DbSet<Localization> Localizations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder model)
         {
@@ -42,6 +43,8 @@ namespace TicketReSail.DAL
             model.Entity<Venue>().ToTable("Venues")
                 .HasOne(v => v.City)
                 .WithMany(c => c.Venues);
+
+            model.Entity<Localization>();
         }
     }
 }

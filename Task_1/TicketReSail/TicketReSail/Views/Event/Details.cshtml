@@ -1,14 +1,26 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using TicketReSail.Core.Interface
+@using TicketReSail.DAL.Model
 @inject IViewLocalizer Localizer
+@inject IVenueService Venue
+@inject IUserService UserService
 
-@model EventInfoViewModel
-@{ ViewData["Title"] = $"Tickets - {Model.Event.Name}"; }
+@model EventsViewModel
+@{ ViewData["Title"] = "Tickets"; }
 
 <div class="container">
     <div class="row">
         <div class="col-3">
             <div class="text-center">
                 <img src="@Url.Action("GetImage", new {id = Model.Event.Id})" alt="@Model.Event.Banner" class="img-thumbnail" />
+            </div>
+            <div class="text-center">
+                <form asp-action="DeleteEvent" asp-route-id="@Model.Event.Id" method="post">
+                    <button type="submit" class="btn btn-sm btn-primary">Delete</button>
+                </form>
+            </div>
+            <div class="text-center">
+                @Html.ActionLink("Add Ticket", "CreateTicket", "Ticket", new {id = Model.Event.Id})
             </div>
         </div>
         <div class="col-sm-9">
@@ -18,7 +30,7 @@
                     <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-geo" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M8 1a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999zm2.493 8.574a.5.5 0 0 1-.411.575c-.712.118-1.28.295-1.655.493a1.319 1.319 0 0 0-.37.265.301.301 0 0 0-.057.09V14l.002.008a.147.147 0 0 0 .016.033.617.617 0 0 0 .145.15c.165.13.435.27.813.395.751.25 1.82.414 3.024.414s2.273-.163 3.024-.414c.378-.126.648-.265.813-.395a.619.619 0 0 0 .146-.15.148.148 0 0 0 .015-.033L12 14v-.004a.301.301 0 0 0-.057-.09 1.318 1.318 0 0 0-.37-.264c-.376-.198-.943-.375-1.655-.493a.5.5 0 1 1 .164-.986c.77.127 1.452.328 1.957.594C12.5 13 13 13.4 13 14c0 .426-.26.752-.544.977-.29.228-.68.413-1.116.558-.878.293-2.059.465-3.34.465-1.281 0-2.462-.172-3.34-.465-.436-.145-.826-.33-1.116-.558C3.26 14.752 3 14.426 3 14c0-.599.5-1 .961-1.243.505-.266 1.187-.467 1.957-.594a.5.5 0 0 1 .575.411z" />
                     </svg>
-                    @*@Model.Event.Venue.City.Name,*@ @Model.Event.Venue.
+                    @Venue.GetCityNameByVenueId(Model.Event.VenueId), @Venue.GetNameVenueById(Model.Event.VenueId)
                 </p>
 
                 <p>
@@ -45,31 +57,43 @@
 
 <hr />
 <div class="container">
-
     <div class="row">
         @foreach (var ticket in Model.Tickets)
         {
-            <div class="col-3">
-                <div class="text-center">
-                    <img src="~/img/Ticket.jpg" width="180" height="150" alt="Ticket" />
+            if (!ticket.Bought)
+            {
+                <div class="col-3">
+                    <div class="text-center">
+                        <img src="~/img/Ticket.jpg" width="180" height="150" alt="Ticket" />
+                    </div>
                 </div>
-            </div>
-            <div class="col-5">
-                <div><strong>@Localizer["Seller"]: </strong>
-                    @Html.ActionLink($"{ticket.User.FirstName} {ticket.User.LastName}", "Index", "User",
-                        new { id = ticket.User.Id }, new { @class = "styleNameEvent" })
+                <div class="col-5">
+                    <div><strong>@Localizer["Seller"]: </strong>
+                        @Html.ActionLink($"{UserService.GetUserNameById(ticket.UserIdSeller)}", "Index", "User",
+                            new { id = ticket.UserIdSeller }, new { @class = "styleNameEvent" })
+                    </div>
+                    <div>
+                        <strong>@Localizer["Seller`s note"]: </strong>
+                        @ticket.Description
+                    </div>
                 </div>
-                <div><strong>@Localizer["Seller`s note"]: </strong></div>
-            </div>
-            <div class="col-4">
-                <div class="text-center">
-                    <strong>@Localizer["Price"]:</strong>
-                    <strong>
-                       <div>$@ticket.Price</div>
-                    </strong>
-                    <div class="btn btn-outline-primary">@Html.ActionLink(Localizer["Buy"].Value, "Index")</div>
+                <div class="col-4">
+                    <div class="text-center">
+                        <strong>@Localizer["Price"]:</strong>
+                        <strong>
+                            <div>$@ticket.Price</div>
+                        </strong>
+                        <div class="btn btn-outline-primary">
+                            @Html.ActionLink(Localizer["Buy"].Value, "CreateOrderWithStatusWaiting", "Order",
+                                new
+                                {
+                                    ticketId = ticket.Id,
+                                    sellerId = ticket.UserIdSeller
+                                })
+                        </div>
+                    </div>
                 </div>
-            </div>
+            }
             <hr />
         }
     </div>

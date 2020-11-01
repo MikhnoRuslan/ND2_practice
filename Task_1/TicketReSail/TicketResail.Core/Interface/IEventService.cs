@@ -7,7 +7,8 @@ namespace TicketReSail.Core.Interface
     public interface IEventService
     {
         Task<Event> GetEventById(int id);
-        Task<IEnumerable<City>> GetCities();
-        IEnumerable<Event> GetEvents();
+        Task<IEnumerable<Event>> GetEvents();
+        string GetEventNameByTicketId(int ticketId);
+        Task<IEnumerable<Ticket>> GetTicketsByIdEvents(int id);
     }
 }

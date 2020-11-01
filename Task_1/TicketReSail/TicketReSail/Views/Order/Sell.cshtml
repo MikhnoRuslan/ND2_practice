@@ -1,31 +1,30 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using TicketReSail.Core.Interface
 @inject IViewLocalizer Localizer
+@inject IEventService Event
+@inject ITickerService Ticker
 
-@model OrdersViewModel
+@model IEnumerable<TicketReSail.DAL.Model.Order>
 
-@{
-    ViewData["Title"] = Localizer["My Tickets"];
-}
+@{ ViewData["Title"] = Localizer["My Tickets"]; }
 
+<h3>The tickets you sell</h3>
+<hr/>
 <table class="table">
     <caption>@Localizer["List of orders"]</caption>
     <thead>
         <tr>
             <th scope="col">@Localizer["Event name"]</th>
             <th scope="col">@Localizer["Price"]</th>
-            <th scope="col">@Localizer["Seller"]</th>
-            <th scope="col">@Localizer["Buyer"]</th>
             <th scope="col">@Localizer["Status"]</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var orders in Model.Orders)
+        @foreach (var orders in Model)
         {
             <tr>
-                <td>@orders.Ticket.Event.Name</td>
-                <td>$@orders.Ticket.Price</td>
-                <td>@orders.Ticket.User.FirstName @orders.Ticket.User.LastName</td>
-                <td>@orders.User.FirstName @orders.User.LastName</td>
+                <td>@Event.GetEventNameByTicketId(orders.TicketId)</td>
+                <td>$@Ticker.GetPriceByTicketId(orders.TicketId)</td>
                 <td>@orders.Status</td>
             </tr>
         }

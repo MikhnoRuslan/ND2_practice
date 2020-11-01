@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TicketReSail.DAL;
+using TicketReSail.Core.Interface;
 using TicketReSail.DAL.Model;
 
 namespace TicketReSail
@@ -18,8 +18,9 @@ namespace TicketReSail
             
             var contextUser = services.GetRequiredService<UserManager<User>>();
             var contextRole = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var contextLocalization = services.GetRequiredService<ILocalizationService>();
 
-            var seeder = new DataSeeder(contextUser, contextRole);
+            var seeder = new DataSeeder(contextUser, contextRole, contextLocalization);
             await seeder.SeedDataAsync();
             await host.RunAsync();
         }

@@ -22,6 +22,29 @@ namespace TicketReSail.Controllers
             _userManager = userManager;
         }
 
+        public async Task<IActionResult> EditRole(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user != null)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var allRoles = await _roleManager.Roles.ToListAsync();
+
+                var model = new ChangeRoleViewModel
+                {
+                    UserId = user.Id,
+                    UserLogin = user.Email,
+                    UserRoles = userRoles,
+                    AllRoles = allRoles
+                };
+
+                return View("EditRole", model);
+            }
+
+            return NotFound();
+        }
+
         [HttpPost]
         public async Task<IActionResult> EditRole(string userId, List<string> roles, string returnUrl)
         {
@@ -41,29 +64,6 @@ namespace TicketReSail.Controllers
                 await _userManager.RemoveFromRolesAsync(user, removedRoles);
 
                 return RedirectToAction("Index", "Admin");
-            }
-
-            return NotFound();
-        }
-
-        public async Task<IActionResult> EditRole(string userId)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user != null)
-            {
-                var userRoles = await _userManager.GetRolesAsync(user);
-                var allRoles = await _roleManager.Roles.ToListAsync();
-
-                var model = new ChangeRoleViewModel
-                {
-                    UserId = user.Id,
-                    UserLogin = user.Email,
-                    UserRoles = userRoles,
-                    AllRoles = allRoles
-                };
-
-                return View("EditRole", model);
             }
 
             return NotFound();

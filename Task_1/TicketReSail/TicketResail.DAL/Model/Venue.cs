@@ -13,7 +13,9 @@ namespace TicketReSail.DAL.Model
         [Required]
         public string Address { get; set; }
 
+        [Required]
         public int CityId { get; set; }
+        [Required]
         public City City { get; set; }
         public ICollection<Event> Tickets { get; set; }
     }
