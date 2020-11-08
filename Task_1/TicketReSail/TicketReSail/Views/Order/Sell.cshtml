@@ -4,7 +4,7 @@
 @inject IEventService Event
 @inject ITickerService Ticker
 
-@model IEnumerable<TicketReSail.DAL.Model.Order>
+@model IEnumerable<TicketReSail.DAL.Model.Ticket>
 
 @{ ViewData["Title"] = Localizer["My Tickets"]; }
 
@@ -20,12 +20,12 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var orders in Model)
+        @foreach (var ticket in Model)
         {
             <tr>
-                <td>@Event.GetEventNameByTicketId(orders.TicketId)</td>
-                <td>$@Ticker.GetPriceByTicketId(orders.TicketId)</td>
-                <td>@orders.Status</td>
+                <td>@Event.GetEventNameByTicketId(ticket.Id)</td>
+                <td>$@ticket.Price</td>
+                <td>@ticket.Status</td>
             </tr>
         }
     </tbody>

@@ -1,6 +1,6 @@
 ﻿namespace TicketReSail.Core.Infrastructure
 {
-    public class OperationDetails
+    public sealed class OperationDetails
     {
         public OperationDetails(bool succeeded, string message, string prop)
         {
@@ -9,7 +9,7 @@
             Property = prop;
         }
         public bool Succeeded { get; }
-        public string Message { get;  }
+        public string Message { get; }
         public string Property { get; }
     }
 }

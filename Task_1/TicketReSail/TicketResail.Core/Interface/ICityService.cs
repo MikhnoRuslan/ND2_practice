@@ -7,5 +7,6 @@ namespace TicketReSail.Core.Interface
     public interface ICityService
     {
         Task<IEnumerable<City>> GetCities();
+        int GetCityIdByName(string name);
     }
 }

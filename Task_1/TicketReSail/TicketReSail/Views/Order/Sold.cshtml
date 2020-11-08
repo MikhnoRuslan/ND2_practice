@@ -31,7 +31,7 @@
                 <td>$@Ticker.GetPriceByTicketId(orders.TicketId)</td>
                 <td>
                     @Html.ActionLink($"{@UserService.GetUserNameById(orders.UserIdBuyer)}", "Index", "User",
-                        new { id = orders.Ticket.UserIdSeller })
+                        new { id = orders.UserIdBuyer })
                 </td>
                 <td>Sold</td>
                 <td>@orders.Track</td>

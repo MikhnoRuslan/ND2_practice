@@ -12,20 +12,15 @@ namespace TicketReSail.Controllers
     public class TicketController : Controller
     {
         private readonly IAction<TickedDTO> _actionTicket;
-        private readonly IAction<OrderDTO> _actionOrder;
         private readonly IUserService _userService;
         private readonly IEventService _eventService;
-        private readonly ITickerService _tickerService;
-        
 
         public TicketController(IAction<TickedDTO> action, IUserService userService,
-            IEventService eventService, IAction<OrderDTO> actionOrder, ITickerService tickerService)
+            IEventService eventService)
         {
             _actionTicket = action;
             _userService = userService;
             _eventService = eventService;
-            _actionOrder = actionOrder;
-            _tickerService = tickerService;
         }
 
         public async Task<IActionResult> CreateTicket()
@@ -47,14 +42,13 @@ namespace TicketReSail.Controllers
                     Description = ticketView.SellerNote,
                     EventId = id,
                     UserId = _userService.GetUserIdByName(User.Identity.Name),
-                    Bought = false
+                    Bought = false,
+                    TicketStatus = Constants.Selling
                 };
 
                 var operationDetails = await _actionTicket.Create(ticketDto);
                 if (operationDetails.Succeeded)
                 {
-                    await CreateOrder(_tickerService.GetLastTicketIdByUserName());
-
                     return RedirectToAction("Details", "Event", new { id = ticketDto.EventId });
                 }
                 
@@ -68,17 +62,6 @@ namespace TicketReSail.Controllers
         public async Task DeleteTicket(int id)
         {
             await _actionTicket.Delete(id);
-        }
-
-        private async Task CreateOrder(int ticketId)
-        {
-            var orderDto = new OrderDTO
-            {
-                Status = Constants.Selling,
-                TicketId = ticketId,
-            };
-
-            await _actionOrder.Create(orderDto);
         }
     }
 }

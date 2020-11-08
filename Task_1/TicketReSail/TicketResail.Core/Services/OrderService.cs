@@ -15,33 +15,17 @@ namespace TicketReSail.Core.Services
     {
         private readonly TicketsContext _context;
         private readonly IUserService _userService;
-        private readonly ITickerService _tickerService;
-
-        public OrderService(TicketsContext context, IUserService userService, ITickerService tickerService)
+        
+        public OrderService(TicketsContext context, IUserService userService)
         {
             _context = context;
             _userService = userService;
-            _tickerService = tickerService;
         }
 
-        public  Order GetOrderByTicketId(int ticketId)
+        public string GetStatusByTicketId(int id)
         {
-            return  _context.Orders.FirstOrDefault(o => o.TicketId == ticketId);
-        }
-
-        public async Task SetStatusForOrderSeller(int ticketId, string sellerId)
-        {
-            var order = _context.Orders
-                .Where(o => o.Ticket.UserIdSeller.Equals(sellerId))
-                .FirstOrDefault(t => t.TicketId == ticketId);
-
-            if (order != null)
-            {
-                order.Status = Constants.Waiting;
-                _context.Update(order);
-            }
-
-            await _context.SaveChangesAsync();
+            var order = _context.Orders.FirstOrDefault(o => o.TicketId == id);
+            return order?.Status;
         }
 
         public async Task<IEnumerable<Order>> GetOrdersForBuy(string status, string userName)
@@ -58,13 +42,9 @@ namespace TicketReSail.Core.Services
                 .Where(o => o.Status.Equals(status)).ToListAsync();
         }
 
-        public async Task ChangeStatusToSoldForSeller(int ticketId, string sellerId, string buyerId)
+        public async Task ChangeStatusToSoldForSeller(int ticketId, string buyerId)
         {
-            var ticket = _tickerService.GetTicketById(ticketId);
-
-            ticket.Bought = true;
-            _context.Update(ticket);
-
+            var ticket = _context.Tickets.FirstOrDefault(t => t.Id == ticketId);
 
             var ordersArray = _context.Orders.Where(o => o.TicketId == ticketId).ToArray();
             foreach (var order in ordersArray)
@@ -73,6 +53,9 @@ namespace TicketReSail.Core.Services
                 {
                     order.Status = Constants.Confirmed;
                     order.Track = Guid.NewGuid();
+
+                    if(ticket != null)
+                        ticket.Bought = true;
 
                     _context.Update(order);
                 }

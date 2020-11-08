@@ -12,6 +12,7 @@ namespace TicketReSail.DAL.Model
         public decimal Price { get; set; }
         public bool Bought { get; set; }
         public string Description { get; set; }
+        public string Status { get; set; }
 
         [Required]
         public int EventId { get; set; }

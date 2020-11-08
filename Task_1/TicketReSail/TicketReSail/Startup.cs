@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TicketReSail.Core.Infrastructure;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
 using TicketReSail.Core.Services;
@@ -55,21 +56,22 @@ namespace TicketReSail
 
             services.AddScoped<IdentityRole>();
             services.AddScoped<IEventService, EventService>();
-            services.AddScoped<IAction<EventDTO>, EventService>();
             services.AddScoped<IOrderService, OrderService>();
-            services.AddScoped<IAction<OrderDTO>, OrderService>();
             services.AddScoped<ITickerService, TicketService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<IAction<CategoryDTO>, CategoryService>();
             services.AddScoped<IVenueService, VenueService>();
-            services.AddScoped<IAction<VenueDTO>, VenueService>();
             services.AddScoped<ICityService, CityService>();
-            services.AddScoped<IAction<CityDTO>, CityService>();
             services.AddScoped<ITickerService, TicketService>();
-            services.AddScoped<IAction<TickedDTO>, TicketService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILocalizationService, LocalizationService>();
+
+            services.Scan(scan => scan
+                .FromAssemblyOf<OperationDetails>()
+                .AddClasses(classes => classes
+                    .AssignableTo(typeof(IAction<>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

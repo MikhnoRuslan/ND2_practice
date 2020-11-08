@@ -7,5 +7,6 @@
         public string UserId { get; set; }
         public string Description { get; set; }
         public bool Bought { get; set; }
+        public string TicketStatus { get; set; }
     }
 }

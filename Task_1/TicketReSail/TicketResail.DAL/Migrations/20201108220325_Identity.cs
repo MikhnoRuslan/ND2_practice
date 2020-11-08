@@ -263,6 +263,7 @@ namespace TicketReSail.DAL.Migrations
                     Price = table.Column<decimal>(type: "money", nullable: false),
                     Bought = table.Column<bool>(nullable: false),
                     Description = table.Column<string>(nullable: true),
+                    Status = table.Column<string>(nullable: true),
                     EventId = table.Column<int>(nullable: false),
                     UserIdSeller = table.Column<string>(nullable: false)
                 },

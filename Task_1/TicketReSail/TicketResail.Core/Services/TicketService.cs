@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TicketReSail.Core.Infrastructure;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
@@ -11,10 +13,43 @@ namespace TicketReSail.Core.Services
     public class TicketService : ITickerService, IAction<TickedDTO>
     {
         private readonly TicketsContext _context;
+        private readonly IUserService _userService;
 
-        public TicketService(TicketsContext context)
+        public TicketService(TicketsContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
+        }
+
+        public bool GetStatusBoughtByTicketId(int id)
+        {
+            var ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+            if (ticket != null)
+            {
+                if (ticket.Bought)
+                    return true;
+            }
+
+            return default;
+        }
+
+        public async Task<IEnumerable<Ticket>> GetTicketsForSell(string status, string userName)
+        {
+            return await _context.Tickets
+                .Where(u => u.UserIdSeller.Equals(_userService.GetUserIdByName(userName)))
+                .Where(o => o.Status.Equals(status)).ToListAsync();
+        }
+
+        public void ChangeStatusToWaitingConfirmedByTicketId(int id)
+        {
+            var ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+            if (ticket != null)
+            {
+                ticket.Status = Constants.Waiting;
+                _context.Update(ticket);
+
+                _context.SaveChangesAsync();
+            }
         }
 
         public int GetEventIdByTicketId(int ticketId)
@@ -31,20 +66,6 @@ namespace TicketReSail.Core.Services
             return ticket.Price;
         }
 
-        public int GetLastTicketIdByUserName( )
-        {
-            var ticket = _context.Tickets.AsEnumerable().Last();
-            if(ticket != null)
-                return ticket.Id;
-
-            return default;
-        }
-
-        public Ticket GetTicketById(int ticketId)
-        {
-            return _context.Tickets.Find(ticketId);
-        }
-
         public async Task<OperationDetails> Create(TickedDTO modelDto)
         {
             var ticket = new Ticket
@@ -53,7 +74,8 @@ namespace TicketReSail.Core.Services
                 EventId = modelDto.EventId,
                 UserIdSeller = modelDto.UserId,
                 Description = modelDto.Description,
-                Bought = false
+                Bought = false,
+                Status = modelDto.TicketStatus
             };
 
             await _context.Tickets.AddAsync(ticket);

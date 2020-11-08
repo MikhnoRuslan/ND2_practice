@@ -10,7 +10,7 @@ using TicketReSail.DAL;
 namespace TicketReSail.DAL.Migrations
 {
     [DbContext(typeof(TicketsContext))]
-    [Migration("20201101211829_Identity")]
+    [Migration("20201108220325_Identity")]
     partial class Identity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -288,6 +288,9 @@ namespace TicketReSail.DAL.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("money");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserIdSeller")
                         .IsRequired()

@@ -287,6 +287,9 @@ namespace TicketReSail.DAL.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("money");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserIdSeller")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");

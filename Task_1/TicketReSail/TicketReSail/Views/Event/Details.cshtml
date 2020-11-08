@@ -84,12 +84,11 @@
                             <div>$@ticket.Price</div>
                         </strong>
                         <div class="btn btn-outline-primary">
-                            @Html.ActionLink(Localizer["Buy"].Value, "CreateOrderWithStatusWaiting", "Order",
-                                new
-                                {
-                                    ticketId = ticket.Id,
-                                    sellerId = ticket.UserIdSeller
-                                })
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                @Html.ActionLink(Localizer["Buy"].Value, "CreateOrderWithStatusWaiting", "Order", 
+                                    new {ticketId = ticket.Id, sellerId = ticket.UserIdSeller, eventId = ticket.EventId})
+                            }
                         </div>
                     </div>
                 </div>

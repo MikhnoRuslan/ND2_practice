@@ -11,11 +11,11 @@ namespace TicketReSail.DAL
         }
 
         public DbSet<Category> Categories { get; set; }
-        public DbSet<City> Cities { get; set; }
+        public virtual DbSet<City> Cities { get; set; }
         public DbSet<Event> Events { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<Ticket> Tickets { get; set; }
-        public DbSet<Venue> Venues { get; set; }
+        public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<Ticket> Tickets { get; set; }
+        public virtual DbSet<Venue> Venues { get; set; }
         public DbSet<Localization> Localizations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder model)
