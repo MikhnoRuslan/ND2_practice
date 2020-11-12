@@ -1,43 +1,38 @@
-﻿@using TicketReSail.Business.Model
-@using Microsoft.AspNetCore.Mvc.Localization
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using TicketReSail.Core.Interface
 @inject IViewLocalizer Localizer
+@inject IUserService Users
 
 <ul class="navbar-nav flex-grow-1">
     @if (User.Identity.IsAuthenticated)
     {
         <li class="nav-item">
-            <span class="navbar-text">@Localizer["Hello"], @User.Identity.Name!</span>
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index"
+               title="Manage">@Localizer["Hello"], @Users.GetLoginByUserName(User.Identity.Name)!</a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">@Localizer["Logout"]</a>
+            <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout"
+                   asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link text-dark">@Localizer["Logout"]</button>
+            </form>
         </li>
 
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                @Localizer["My Tickets"]
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <div>@Html.ActionLink(Localizer["Selling"].Value, "SellTicket", "Order", new { status = Localizer["Selling"].Value })</div>
-                <div>@Html.ActionLink(Localizer["Sold"].Value, "SellTicket", "Order", new { status = Localizer["Sold"].Value })</div>
-                <div>@Html.ActionLink(Localizer["Waiting"].Value, "SellTicket", "Order", new { status = Localizer["Waiting"] })</div>
-            </div>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="IndexSell">@Localizer["My Tickets"]</a>
         </li>
 
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                @Localizer["My Orders"]
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <div>@Html.ActionLink(Localizer["WaitingForConfirmation"].Value, "BuyTicket", "Order", new { status = Localizer["WaitingForConfirmation"].Value })</div>
-                <div>@Html.ActionLink(Localizer["Confirmation"].Value, "BuyTicket", "Order", new { status = Localizer["Confirmation"].Value })</div>
-                <div>@Html.ActionLink(Localizer["Rejected"].Value, "BuyTicket", "Order", new { status = Localizer["Rejected"].Value })</div>
-            </div>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="IndexBuy">@Localizer["My Orders"]</a>
         </li>
     }
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">@Localizer["Sing In"]</a>
-        </li>}
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">@Localizer["Sing In"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">@Localizer["Register"]</a>
+        </li>
+    }
 </ul>

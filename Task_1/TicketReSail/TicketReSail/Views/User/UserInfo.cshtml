@@ -1,5 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using TicketReSail.Core.Interface
 @inject IViewLocalizer Localizer
+@inject IUserService UserService
 
 @model UserViewModel
 @{
@@ -10,14 +12,15 @@
 
 <div class="container">
     <div class="row">
-        @foreach (var user in Model.Users)
-        {
-            <div class="text-left">
-                <div><strong>@Localizer["First name"]: </strong>@user.FirstName</div>
-                <div><strong>@Localizer["Last name"]: </strong>@user.LastName</div>
-                <div><strong>@Localizer["Address"]: </strong>@user.Address</div>
-                <div><strong>@Localizer["Phone number"]: +</strong>@user.PhoneNumber</div>
+        <div class="text-left">
+            <div><strong>@Localizer["First name"]: </strong>@UserService.GetFirstNameById(Model.Users.Id)
             </div>
-        }
+            <div><strong>@Localizer["Last name"]: </strong>@UserService.GetLastNameById(Model.Users.Id)
+            </div>
+            <div><strong>@Localizer["Address"]: </strong>@UserService.GetAddressById(Model.Users.Id)
+            </div>
+            <div><strong>@Localizer["Phone number"]: </strong>@UserService.GetPhoneNumberById(Model.Users.Id)
+            </div>
+        </div>
     </div>
 </div>

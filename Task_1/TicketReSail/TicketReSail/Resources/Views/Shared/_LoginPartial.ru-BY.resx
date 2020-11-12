@@ -141,4 +141,8 @@
 	  <value>Адхілена</value>
 	  <comment>Rejected</comment>
   </data>
+  <data name="Register" xml:space="preserve">
+	  <value>Рэгістрацыя</value>
+	  <comment>Register</comment>
+  </data>
 </root>

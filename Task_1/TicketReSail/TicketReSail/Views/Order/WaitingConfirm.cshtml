@@ -1,0 +1,50 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using TicketReSail.Core.Interface
+@inject IViewLocalizer Localizer
+@inject IEventService Event
+@inject ITickerService Ticker
+@inject IUserService UserService
+
+@model IEnumerable<TicketReSail.DAL.Model.Order>
+
+@{ ViewData["Title"] = Localizer["My Tickets"]; }
+
+<h3>Waiting Confirmation</h3>
+<hr/>
+<table class="table">
+    <caption>@Localizer["List of orders"]</caption>
+    <thead>
+    <tr>
+        <th scope="col">@Localizer["Event name"]</th>
+        <th scope="col">@Localizer["Price"]</th>
+        <th scope="col">@Localizer["Buyer"]</th>
+        <th scope="col">@Localizer["Status"]</th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var orders in Model)
+    {
+        <tr>
+            <td>@Event.GetEventNameByTicketId(orders.TicketId)</td>
+            <td>$@Ticker.GetPriceByTicketId(orders.TicketId)</td>
+            <td>
+                @Html.ActionLink($"{@UserService.GetUserNameById(orders.UserIdBuyer)}", "Index", "User",
+                    new { id = orders.UserIdBuyer })
+            </td>
+            <td>@orders.Status</td>
+            <td>
+                <div class="btn btn-outline-primary">
+                    @Html.ActionLink(Localizer["Confirm"].Value, "ConfirmOrder", "Order",
+                        new
+                        {
+                            ticketId = orders.TicketId,
+                            sellerId = orders.Ticket.UserIdSeller,
+                            buyerId = orders.UserIdBuyer
+                        })
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

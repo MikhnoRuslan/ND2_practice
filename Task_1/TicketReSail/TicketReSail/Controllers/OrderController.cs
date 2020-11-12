@@ -1,41 +1,95 @@
-﻿using System.Linq;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using TicketReSail.Business;
-using TicketReSail.Models;
+using TicketReSail.Core.Interface;
+using TicketReSail.Core.ModelDTO;
+using TicketReSail.DAL.Model;
 
 namespace TicketReSail.Controllers
 {
     public class OrderController : Controller
     {
-        private readonly OrderRepository _orderRepository;
+        private readonly IOrderService _orderService;
+        private readonly IAction<OrderDTO> _action;
+        private readonly IUserService _userService;
+        private readonly ITickerService _tickerService;
 
-        public OrderController(OrderRepository orderRepository)
+        public OrderController(IOrderService orderService, IAction<OrderDTO> action, IUserService userService, ITickerService tickerService)
         {
-            _orderRepository = orderRepository;
+            _orderService = orderService;
+            _action = action;
+            _userService = userService;
+            _tickerService = tickerService;
         }
 
-        public IActionResult BuyTicket(string status)
+        public IActionResult IndexBuy()
         {
-            var orders = new OrdersViewModel
-            {
-                Orders = _orderRepository.GetOrders()
-                    .Where(u => u.Buyer.Login.Equals(User.Identity.Name))
-                    .Where(o => o.Status.Equals(status)).ToList()
-            };
-
-            return View("Buy", orders);
+            return View("IndexBuy");
         }
 
-        public IActionResult SellTicket(string status)
+        public IActionResult IndexSell()
         {
-            var orders = new OrdersViewModel
+            return View("IndexSell");
+        }
+
+        [HttpGet("[controller]/[action]/{status}")]
+        public async Task<IActionResult> Buy(string status)
+        {
+            return View("Buy", await _orderService.GetOrdersForBuy(status, User.Identity.Name));
+        }
+
+        [HttpGet("[controller]/[action]/{status}")]
+        public async Task<IActionResult> Confirmed(string status)
+        {
+            return View("Confirmed", await _orderService.GetOrdersForBuy(status, User.Identity.Name));
+        }
+
+        [HttpGet("[controller]/[action]/{status}")]
+        public async Task<IActionResult> Rejected(string status)
+        {
+            return View("Rejected", await _orderService.GetOrdersForBuy(status, User.Identity.Name));
+        }
+
+        [HttpGet("[controller]/[action]/{status}")]
+        public async Task<IActionResult> Sell(string status)
+        {
+            return View("Sell", await _tickerService.GetTicketsForSell(status, User.Identity.Name));
+        }
+
+        [HttpGet("[controller]/[action]/{status}")]
+        public async Task<IActionResult> WaitingConfirm(string status)
+        {
+            return View("WaitingConfirm", await _orderService.GetOrdersForSell(status, User.Identity.Name));
+        }
+
+        [HttpGet("[controller]/[action]/{status}")]
+        public async Task<IActionResult> Sold(string status)
+        {
+            return View("Sold", await _orderService.GetOrdersForSell(status, User.Identity.Name));
+        }
+
+        public async Task<IActionResult> CreateOrderWithStatusWaiting(int ticketId, string sellerId, int eventId)
+        {
+            var orderDto = new OrderDTO
             {
-                Orders = _orderRepository.GetOrders()
-                    .Where(u => u.Ticket.Seller.Login.Equals(User.Identity.Name))
-                    .Where(o => o.Status.Equals(status)).ToList()
+                TicketId = ticketId,
+                SellerId = sellerId,
+                BuyerId = _userService.GetUserIdByName(User.Identity.Name),
+                Status = Constants.Waiting,
+                EventId = eventId
             };
 
-            return View("Sell", orders);
+            await _action.Create(orderDto);
+
+            _tickerService.ChangeStatusToWaitingConfirmedByTicketId(ticketId);
+
+            return RedirectToAction("Buy", new {status = Constants.Waiting});
+        }
+
+        public async Task<IActionResult> ConfirmOrder(int ticketId, string buyerId)
+        {
+            await _orderService.ChangeStatusToSoldForSeller(ticketId, buyerId);
+
+            return RedirectToAction("Sold", new {status = Constants.Confirmed});
         }
     }
 }

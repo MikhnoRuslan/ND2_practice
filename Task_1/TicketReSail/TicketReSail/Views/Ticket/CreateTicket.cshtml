@@ -1,0 +1,38 @@
+﻿@using TicketReSail.DAL.Model
+@model TicketViewModel
+
+@{
+    ViewData["Title"] = "CreateTicket";
+}
+
+<h2>Create Ticket</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateTicket" asp-route-returnUrl-returnurl="ViewBag.ReturnUrl">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SellerNote" class="control-label">Seller note</label>
+                <textarea asp-for="SellerNote" class="form-control" id="exampleTextarea" rows="3"></textarea>
+                <span asp-validation-for="SellerNote" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Event" asp-action="Details">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

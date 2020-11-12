@@ -1,19 +1,30 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using TicketReSail.Core.Interface;
+using TicketReSail.DAL;
+using TicketReSail.DAL.Model;
 
 namespace TicketReSail
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            
+            var contextUser = services.GetRequiredService<UserManager<User>>();
+            var contextRole = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var contextLocalization = services.GetRequiredService<ILocalizationService>();
+            var context = services.GetRequiredService<TicketsContext>();
+
+            var seeder = new DataSeeder(contextUser, contextRole, contextLocalization, context);
+            await seeder.SeedDataAsync();
+            await host.RunAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

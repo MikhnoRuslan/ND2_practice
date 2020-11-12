@@ -1,0 +1,28 @@
+﻿@model IEnumerable<TicketReSail.DAL.Model.Category>
+@{
+    ViewData["Title"] = "Create category";
+}
+
+<a asp-action="CreateCategory">Create category</a>
+
+<table class="table">
+    @foreach (var category in Model)
+    {
+        <tr>
+            <td>@category.Name</td>
+            <td>
+                <form asp-action="DeleteCategory" asp-route-id="@category.Id" method="post">
+                    <button type="submit" class="btn btn-sm btn-primary">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+</table>
+
+<div>
+    <a asp-controller="Admin" asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
