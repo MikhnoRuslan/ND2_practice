@@ -1,3 +1,7 @@
+using System;
+using System.IO;
+using System.Reflection;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,10 +13,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TicketReSail.Core.Infrastructure;
 using TicketReSail.Core.Interface;
-using TicketReSail.Core.ModelDTO;
 using TicketReSail.Core.Services;
 using TicketReSail.DAL;
 using TicketReSail.DAL.Model;
+using TicketReSail.Mapper;
 
 namespace TicketReSail
 {
@@ -62,16 +66,26 @@ namespace TicketReSail
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IVenueService, VenueService>();
             services.AddScoped<ICityService, CityService>();
-            services.AddScoped<ITickerService, TicketService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILocalizationService, LocalizationService>();
 
             services.Scan(scan => scan
                 .FromAssemblyOf<OperationDetails>()
                 .AddClasses(classes => classes
-                    .AssignableTo(typeof(IAction<>)))
+                    .AssignableTo(typeof(IAction<,>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
+
+            services.AddControllers().AddXmlDataContractSerializerFormatters();
+
+            services.AddSwaggerGen(c =>
+            {
+                var file = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var path = Path.Combine(AppContext.BaseDirectory, file);
+                c.IncludeXmlComments(path);
+            });
+
+            services.AddAutoMapper(typeof(MappingProfile));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,10 +113,20 @@ namespace TicketReSail
 
             app.UseRequestLocalization(localizationOptions);
 
+            app.UseSwagger();
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TicketReSail");
+            });
 
             app.UseEndpoints(endpoints =>
             {
@@ -111,6 +135,8 @@ namespace TicketReSail
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "/{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapControllers();
             });
         }
     }

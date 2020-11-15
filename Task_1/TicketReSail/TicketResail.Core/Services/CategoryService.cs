@@ -10,7 +10,7 @@ using TicketReSail.DAL.Model;
 
 namespace TicketReSail.Core.Services
 {
-    public class CategoryService : ICategoryService, IAction<CategoryDTO>
+    public class CategoryService : ICategoryService, IAction<CategoryDTO, Category>
     {
         private readonly TicketsContext _context;
 
@@ -22,6 +22,19 @@ namespace TicketReSail.Core.Services
         public async Task<IEnumerable<Category>> GetCategories()
         {
             return await _context.Categories.ToListAsync();
+        }
+
+        public async Task<Category> GetCategoryById(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+
+            return category ?? null;
+        }
+
+        public int GetCategoryIdByName(string name)
+        {
+            var category = _context.Categories.FirstOrDefault(c => c.Name.Equals(name));
+            return category?.Id ?? default;
         }
 
         public async Task<OperationDetails> Create(CategoryDTO categoryDto)
@@ -42,13 +55,15 @@ namespace TicketReSail.Core.Services
             }
         }
 
-        public async Task Delete(int id)
+        public async Task<Category> Delete(int id)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category != null)
                 _context.Categories.Remove(category);
 
             await _context.SaveChangesAsync();
+
+            return category;
         }
     }
 }

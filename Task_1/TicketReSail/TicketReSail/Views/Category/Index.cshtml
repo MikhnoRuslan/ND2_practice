@@ -6,23 +6,77 @@
 <a asp-action="CreateCategory">Create category</a>
 
 <table class="table">
-    @foreach (var category in Model)
-    {
+    <thead>
         <tr>
-            <td>@category.Name</td>
-            <td>
-                <form asp-action="DeleteCategory" asp-route-id="@category.Id" method="post">
-                    <button type="submit" class="btn btn-sm btn-primary">Delete</button>
-                </form>
-            </td>
+            <td></td>
+            <td></td>
+            <td></td>
         </tr>
-    }
+    </thead>
+    <tbody></tbody>
 </table>
 
 <div>
     <a asp-controller="Admin" asp-action="Index">Back to List</a>
 </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+<script>
+
+    async function getCategories() {
+        const response = await fetch("/api/v1/categories",
+            {
+                method: "GET",
+                headers: { "Accept": "application/jcon" }
+            });
+        if (response.ok === true) {
+
+            const categories = await response.json();
+            let rows = document.querySelector("tbody");
+            categories.forEach(category => {
+                rows.append(row(category));
+            });
+        }
+    }
+
+    async function deleteCategory(id) {
+        const response = await fetch(`/api/v1/categories/${id}`,
+            {
+                method: "DELETE",
+                headers: { "Accept": "application/jcon" }
+            });
+        if (response.ok === true) {
+            const category = await response.json();
+            document.querySelector(`tr[data-rowid='${category.id}']`).remove();
+        }
+    }
+
+    function row(category) {
+        const tr = document.createElement("tr");
+        tr.setAttribute("data-rowid", category.id);
+
+        const nameTd = document.createElement("td");
+        nameTd.append(category.name);
+        tr.append(nameTd);
+
+        const linksTd = document.createElement("td");
+
+        const removeLink = document.createElement("a");
+        removeLink.setAttribute("data-id", category.id);
+        removeLink.setAttribute("type", "submit");
+        removeLink.setAttribute("class", "btn btn-sm btn-primary");
+        removeLink.append("Delete");
+        removeLink.addEventListener("click", e => {
+
+            e.preventDefault();
+            deleteCategory(category.id);
+        });
+
+        linksTd.append(removeLink);
+        tr.appendChild(linksTd);
+
+        return tr;
+    }
+
+    getCategories();
+
+</script>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
+using TicketReSail.Core.Queries;
 using TicketReSail.DAL.Model;
 using TicketReSail.Models;
 
@@ -13,18 +14,20 @@ namespace TicketReSail.Controllers
     public class EventController : Controller
     {
         private readonly IEventService _eventService;
-        private readonly IAction<EventDTO> _action;
+        private readonly IAction<EventDTO, Event> _action;
         private readonly IVenueService _venueService;
         private readonly ICategoryService _categoryService;
+        private readonly ICityService _cityService;
 
         public EventController(IEventService eventService,
             ICategoryService categoryService, IVenueService venueService,
-            IAction<EventDTO> action)
+            IAction<EventDTO, Event> action, ICityService cityService)
         {
             _eventService = eventService;
             _categoryService = categoryService;
             _venueService = venueService;
             _action = action;
+            _cityService = cityService;
         }
 
         public async Task<IActionResult> Index(int? categoryId)
@@ -59,12 +62,17 @@ namespace TicketReSail.Controllers
             return View("Details", eventInfo);
         }
 
-        public async Task<IActionResult> CreateEvent()
+        public async Task<IActionResult> CreateEvent([FromQuery] VenueQuery venueQuery)
         {
             ViewBag.Categories = new SelectList(await _categoryService.GetCategories(), "Id", "Name");
-            ViewBag.Venues = new SelectList(await _venueService.GetVenues(), "Id", "Name");
+            ViewBag.Venues = new SelectList(await _venueService.GetVenues(venueQuery), "Id", "Name");
 
-            return View();
+            var eventsViewModel = new EventsViewModel
+            {
+                Cities = (await _cityService.GetCities()).ToArray()
+            };
+
+            return View(eventsViewModel);
         }
 
         [HttpPost]

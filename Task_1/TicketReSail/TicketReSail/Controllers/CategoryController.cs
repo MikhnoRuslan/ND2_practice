@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
+using TicketReSail.DAL.Model;
 using TicketReSail.Models;
 
 namespace TicketReSail.Controllers
@@ -9,9 +10,9 @@ namespace TicketReSail.Controllers
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
-        private readonly IAction<CategoryDTO> _action;
+        private readonly IAction<CategoryDTO, Category> _action;
 
-        public CategoryController(ICategoryService categoryService, IAction<CategoryDTO> action)
+        public CategoryController(ICategoryService categoryService, IAction<CategoryDTO, Category> action)
         {
             _categoryService = categoryService;
             _action = action;
@@ -32,7 +33,7 @@ namespace TicketReSail.Controllers
         {
             if (ModelState.IsValid)
             {
-                var categoryDto = new CategoryDTO{Name = categoryView.Name};
+                var categoryDto = new CategoryDTO { Name = categoryView.Name };
                 var operationDetails = await _action.Create(categoryDto);
                 if (operationDetails.Succeeded)
                     return RedirectToAction("Index");
