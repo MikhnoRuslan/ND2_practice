@@ -14,7 +14,8 @@
     <select name="categoryId" class="form-control">
         @foreach (var category in Model.Categories)
         {
-<option value="@category.Id">@Localizer[@category.Name]</option>}
+            <option value="@category.Id">@Localizer[@category.Name]</option>
+        }
     </select>
     <label>&nbsp;</label>
     <input type="submit" value="@Localizer["Send"]" />
@@ -24,21 +25,23 @@
     <div class="row">
         @foreach (var events in Model.Events)
         {
-<div class="pt-5">
-    <div class="col">
-        <div class="card text-center">
-            <img src="@Url.Action("GetImage", new {id = events.Id})" width="235" height="300" alt="@events.Name" />
-            <div class="card-body">
-                <strong>
-                    @Html.ActionLink(@events.Name, "Details", "Event",
-                             new { id = events.Id }, new { @class = "styleNameEvent" })
-                </strong>
-                <br><h8>@Localizer["The date of the"]: @events.Date.ToString("dd.MM.yyyy")</h8>
-                <br><h8>@Localizer["City"]: @Venue.GetCityNameByVenueId(events.VenueId)</h8>
-                <br><h8>@Localizer["Venue"]: @Venue.GetVenueAddressByVenueId(events.VenueId)</h8>
+            <div class="pt-5">
+                <div class="col">
+                    <div class="card text-center">
+                        <img src="@Url.Action("GetImage", new {id = events.Id})" width="235" height="300" alt="@events.Name" />
+                        <div class="card-body">
+                            <strong>
+                                @Html.ActionLink(@events.Name, "Details", "Event",
+                                         new { id = events.Id }, new { @class = "styleNameEvent" })
+                            </strong>
+                            <br><h8>@Localizer["The date of the"]: @events.Date.ToString("dd.MM.yyyy")</h8>
+                            <br><h8>@Localizer["City"]: @Venue.GetCityNameByVenueId(events.VenueId)</h8>
+                            <br><h8>@Localizer["Venue"]: @Venue.GetVenueAddressByVenueId(events.VenueId)</h8>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</div>}
+
+        }
     </div>
 </div>

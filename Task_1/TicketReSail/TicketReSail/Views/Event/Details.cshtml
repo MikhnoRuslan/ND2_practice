@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.CodeAnalysis.CSharp.Syntax
 @using TicketReSail.Core.Interface
 @using TicketReSail.DAL.Model
 @inject IViewLocalizer Localizer
@@ -60,7 +61,7 @@
     <div class="row">
         @foreach (var ticket in Model.Tickets)
         {
-            if (!ticket.Bought)
+            if (!ticket.Bought )
             {
                 <div class="col-3">
                     <div class="text-center">
@@ -83,13 +84,25 @@
                         <strong>
                             <div>$@ticket.Price</div>
                         </strong>
-                        <div class="btn btn-outline-primary">
-                            @if (User.Identity.IsAuthenticated)
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            if (ticket.UserIdSeller != UserService.GetUserIdByName(User.Identity.Name))
                             {
-                                @Html.ActionLink(Localizer["Buy"].Value, "CreateOrderWithStatusWaiting", "Order", 
-                                    new {ticketId = ticket.Id, sellerId = ticket.UserIdSeller, eventId = ticket.EventId})
+                                <form asp-controller="Order" asp-action="CreateOrderWithStatusWaiting"
+                                      asp-route-ticketId="@ticket.Id" asp-route-sellerId="@ticket.UserIdSeller"
+                                      asp-route-eventId="@ticket.EventId">
+                                        <button type="submit" class="btn btn-sm btn-primary">@Localizer["Buy"].Value</button>
+                                </form>
                             }
-                        </div>
+                                
+                            else
+                            {
+                                <form asp-controller="Ticket" asp-action="DeleteTicket" asp-route-ticketId="@ticket.Id"
+                                      asp-route-eventId="@ticket.EventId" method="post">
+                                        <button type="submit" class="btn btn-sm btn-primary">Delete</button>
+                                    </form>
+                            }
+                        }
                     </div>
                 </div>
             }

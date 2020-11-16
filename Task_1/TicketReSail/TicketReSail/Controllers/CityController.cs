@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
+using TicketReSail.DAL.Model;
 using TicketReSail.Models;
 
 namespace TicketReSail.Controllers
@@ -9,9 +10,9 @@ namespace TicketReSail.Controllers
     public class CityController : Controller
     {
         private readonly ICityService _cityService;
-        private readonly IAction<CityDTO> _action;
+        private readonly IAction<CityDTO, City> _action;
 
-        public CityController(ICityService cityService, IAction<CityDTO> action)
+        public CityController(ICityService cityService, IAction<CityDTO, City> action)
         {
             _cityService = cityService;
             _action = action;

@@ -11,7 +11,7 @@ using TicketReSail.DAL.Model;
 
 namespace TicketReSail.Core.Services
 {
-    public class OrderService : IOrderService, IAction<OrderDTO>
+    public class OrderService : IOrderService, IAction<OrderDTO, Order>
     {
         private readonly TicketsContext _context;
         private readonly IUserService _userService;
@@ -76,20 +76,34 @@ namespace TicketReSail.Core.Services
                 TicketId = modelDto.TicketId,
                 UserIdBuyer = modelDto.BuyerId
             };
-            
+
+            ChangeStatusToWaitingConfirmedByTicketId(modelDto.TicketId);
+
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
 
             return new OperationDetails(true, "Order is successfully created", string.Empty);
         }
 
-        public async Task Delete(int id)
+        public async Task<Order> Delete(int id)
         {
             var order = await _context.Orders.FindAsync(id);
             if (order != null)
                 _context.Orders.Remove(order);
 
             await _context.SaveChangesAsync();
+
+            return order;
+        }
+
+        private void ChangeStatusToWaitingConfirmedByTicketId(int id)
+        {
+            var ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+            if (ticket != null)
+            {
+                ticket.Status = Constants.Waiting;
+                _context.Update(ticket);
+            }
         }
     }
 }

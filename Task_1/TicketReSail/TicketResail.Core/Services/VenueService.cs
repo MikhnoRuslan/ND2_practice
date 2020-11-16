@@ -5,12 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using TicketReSail.Core.Infrastructure;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
+using TicketReSail.Core.Queries;
 using TicketReSail.DAL;
 using TicketReSail.DAL.Model;
 
 namespace TicketReSail.Core.Services
 {
-    public class VenueService : IVenueService, IAction<VenueDTO>
+    public class VenueService : IVenueService, IAction<VenueDTO, Venue>
     {
         private readonly TicketsContext _context;
 
@@ -19,9 +20,14 @@ namespace TicketReSail.Core.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Venue>> GetVenues()
+        public async Task<IEnumerable<Venue>> GetVenues(VenueQuery venueQuery)
         {
-            return await _context.Venues.ToListAsync();
+            var queryable = _context.Venues.AsQueryable();
+
+            if (venueQuery.Cities != null)
+                queryable = queryable.Where(v => venueQuery.Cities.Contains(v.CityId));
+
+            return await queryable.ToListAsync();
         }
 
         public string GetNameVenueById(int id)
@@ -70,13 +76,15 @@ namespace TicketReSail.Core.Services
             }
         }
 
-        public async Task Delete(int id)
+        public async Task<Venue> Delete(int id)
         {
             var venue = await _context.Venues.FindAsync(id);
             if (venue != null)
                 _context.Venues.Remove(venue);
 
             await _context.SaveChangesAsync();
+
+            return venue;
         }
 
         private int GetCityIdByVenueId(int id)

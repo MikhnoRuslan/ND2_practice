@@ -10,7 +10,7 @@ using TicketReSail.DAL.Model;
 
 namespace TicketReSail.Core.Services
 {
-    public class CityService : ICityService, IAction<CityDTO>
+    public class CityService : ICityService, IAction<CityDTO, City>
     {
         private readonly TicketsContext _context;
 
@@ -50,7 +50,7 @@ namespace TicketReSail.Core.Services
             }
         }
 
-        public async Task Delete(int id)
+        public async Task<City> Delete(int id)
         {
             var city = await _context.Cities.FindAsync(id);
 
@@ -58,6 +58,8 @@ namespace TicketReSail.Core.Services
                 _context.Cities.Remove(city);
 
             await _context.SaveChangesAsync();
+
+            return city;
         }
     }
 }

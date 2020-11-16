@@ -9,18 +9,21 @@ using TicketReSail.Models;
 
 namespace TicketReSail.Controllers
 {
+    [Authorize]
     public class TicketController : Controller
     {
-        private readonly IAction<TickedDTO> _actionTicket;
+        private readonly IAction<TickedDTO, Ticket> _actionTicket;
         private readonly IUserService _userService;
         private readonly IEventService _eventService;
+        private readonly ITickerService _tickerService;
 
-        public TicketController(IAction<TickedDTO> action, IUserService userService,
-            IEventService eventService)
+        public TicketController(IAction<TickedDTO, Ticket> action, IUserService userService,
+            IEventService eventService, ITickerService tickerService)
         {
             _actionTicket = action;
             _userService = userService;
             _eventService = eventService;
+            _tickerService = tickerService;
         }
 
         public async Task<IActionResult> CreateTicket()
@@ -59,9 +62,11 @@ namespace TicketReSail.Controllers
         }
 
         [HttpPost]
-        public async Task DeleteTicket(int id)
+        public async Task<IActionResult> DeleteTicket(int ticketId, int eventId)
         {
-            await _actionTicket.Delete(id);
+            await _actionTicket.Delete(ticketId);
+
+            return RedirectToAction("Details", "Event", new { id = eventId });
         }
     }
 }

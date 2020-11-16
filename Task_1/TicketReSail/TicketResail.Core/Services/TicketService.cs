@@ -10,7 +10,7 @@ using TicketReSail.DAL.Model;
 
 namespace TicketReSail.Core.Services
 {
-    public class TicketService : ITickerService, IAction<TickedDTO>
+    public class TicketService : ITickerService, IAction<TickedDTO, Ticket>
     {
         private readonly TicketsContext _context;
         private readonly IUserService _userService;
@@ -19,6 +19,11 @@ namespace TicketReSail.Core.Services
         {
             _context = context;
             _userService = userService;
+        }
+
+        public async Task<IEnumerable<Ticket>> GetTickets()
+        {
+            return await _context.Tickets.ToListAsync();
         }
 
         public bool GetStatusBoughtByTicketId(int id)
@@ -38,18 +43,6 @@ namespace TicketReSail.Core.Services
             return await _context.Tickets
                 .Where(u => u.UserIdSeller.Equals(_userService.GetUserIdByName(userName)))
                 .Where(o => o.Status.Equals(status)).ToListAsync();
-        }
-
-        public void ChangeStatusToWaitingConfirmedByTicketId(int id)
-        {
-            var ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
-            if (ticket != null)
-            {
-                ticket.Status = Constants.Waiting;
-                _context.Update(ticket);
-
-                _context.SaveChangesAsync();
-            }
         }
 
         public int GetEventIdByTicketId(int ticketId)
@@ -84,13 +77,15 @@ namespace TicketReSail.Core.Services
             return new OperationDetails(true, string.Empty, string.Empty);
         }
 
-        public async Task Delete(int id)
+        public async Task<Ticket> Delete(int id)
         {
             var ticket = await _context.Tickets.FindAsync(id);
             if (ticket != null)
                 _context.Tickets.Remove(ticket);
 
             await _context.SaveChangesAsync();
+
+            return ticket;
         }
     }
 }
