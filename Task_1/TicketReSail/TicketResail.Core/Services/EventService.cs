@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using MailKit.Search;
 using Microsoft.EntityFrameworkCore;
 using TicketReSail.Core.Helpers;
 using TicketReSail.Core.Infrastructure;
@@ -31,28 +34,39 @@ namespace TicketReSail.Core.Services
             return await _context.Events.FindAsync(id);
         }
 
-        public async Task<IEnumerable<Event>> GetEvents(/*EventQuery eventQuery*/)
+        public async Task<PagedResult<Event>> GetEvents(EventQuery eventQuery)
         {
             var queryable = _context.Events.AsQueryable();
 
-            //if (eventQuery.Venues != null)
-            //    queryable = queryable.Where(e => eventQuery.Venues.Contains(e.VenueId));
+            if (eventQuery.Venues != null)
+                queryable = queryable.Where(e => eventQuery.Venues.Contains(e.VenueId));
 
-            //if(eventQuery.FistDataTime != null)
-            //    queryable = queryable.Where(e => eventQuery.FistDataTime <= e.Date);
+            if (eventQuery.FistDataTime != null)
+                queryable = queryable.Where(e => e.Date >= eventQuery.FistDataTime);
 
-            //if (eventQuery.SecondDataTime != null)
-            //    queryable = queryable.Where(e => e.Date <= eventQuery.SecondDataTime);
+            if (eventQuery.SecondDataTime != null)
+                queryable = queryable.Where(e => e.Date <= eventQuery.SecondDataTime);
 
-            //var count = await queryable.CountAsync();
+            Expression<Func<Event, object>> sortExpression = eventQuery.SortBy switch
+            {
+                "Date" => e => e.Date,
+                "Venue" => e => e.VenueId,
+                _ => e => e.Id
+            };
 
-            //queryable = queryable.ApplyPagination(eventQuery);
+            queryable = eventQuery.SortOrder switch
+            {
+                SortOrder.Descending => queryable.OrderByDescending(sortExpression),
+                _ => queryable.OrderBy(sortExpression)
+            };
 
-            //var item = await queryable.ToListAsync();
+            var count = await queryable.CountAsync();
 
-            //return new PagedResult<Event>{TotalCount = count, Items = item};
+            queryable = queryable.ApplyPagination(eventQuery);
 
-            return await queryable.ToListAsync();
+            var item = await queryable.ToListAsync();
+
+            return new PagedResult<Event> { TotalCount = count, Items = item };
         }
 
         public string GetEventNameByTicketId(int ticketId)

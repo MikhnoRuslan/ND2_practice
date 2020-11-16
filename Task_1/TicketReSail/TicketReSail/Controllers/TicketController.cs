@@ -28,7 +28,7 @@ namespace TicketReSail.Controllers
 
         public async Task<IActionResult> CreateTicket()
         {
-            ViewBag.Events = new SelectList(await _eventService.GetEvents(), "Id", "Name");
+            //ViewBag.Events = new SelectList(await _eventService.GetEvents(), "Id", "Name");
 
             return View();
         }
