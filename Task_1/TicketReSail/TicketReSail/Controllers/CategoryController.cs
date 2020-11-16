@@ -1,9 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TicketReSail.Core.Interface;
-using TicketReSail.Core.ModelDTO;
-using TicketReSail.DAL.Model;
-using TicketReSail.Models;
 
 namespace TicketReSail.Controllers
 {

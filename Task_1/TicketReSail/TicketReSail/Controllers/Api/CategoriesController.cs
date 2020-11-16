@@ -42,7 +42,7 @@ namespace TicketReSail.Controllers.Api
             if (category == null)
                 return NotFound();
 
-            return category;
+            return new ObjectResult(category);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace TicketReSail.Controllers.Api
                 var categoryDto = new CategoryDTO { Name = categoryView.Name };
                 var operationDetails = await _action.Create(categoryDto);
                 if (operationDetails.Succeeded)
-                    return Ok(categoryView);
+                    return CreatedAtAction("GetCategory", new {id = _categoryService.GetCategoryIdByName(categoryDto.Name)}, categoryView);
                 else
                 {
                     ModelState.AddModelError(operationDetails.Property, operationDetails.Message);

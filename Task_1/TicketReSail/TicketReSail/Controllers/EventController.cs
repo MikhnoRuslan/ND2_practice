@@ -30,25 +30,25 @@ namespace TicketReSail.Controllers
             _cityService = cityService;
         }
 
-        public async Task<IActionResult> Index(int? categoryId)
-        {
-            var categories = (await _categoryService.GetCategories()).ToList()
-                .Select(c => new Category { Id = c.Id, Name = c.Name }).ToList();
+        //public async Task<IActionResult> Index(int? categoryId)
+        //{
+        //    var categories = (await _categoryService.GetCategories()).ToList()
+        //        .Select(c => new Category { Id = c.Id, Name = c.Name }).ToList();
 
-            categories.Insert(0, new Category { Id = 0, Name = "All" });
+        //    categories.Insert(0, new Category { Id = 0, Name = "All" });
 
-            var eventsViewModel = new EventsViewModel
-            {
-                Categories = categories,
-                Events = (await _eventService.GetEvents()).ToArray()
-            };
+        //    var eventsViewModel = new EventsViewModel
+        //    {
+        //        Categories = categories,
+        //        Events = (await _eventService.GetEvents()).ToArray()
+        //    };
 
-            if (categoryId != null && categoryId > 0)
-                eventsViewModel.Events = (await _eventService.GetEvents())
-                    .Where(e => e.Category.Id == categoryId).ToArray();
+        //    if (categoryId != null && categoryId > 0)
+        //        eventsViewModel.Events = (await _eventService.GetEvents())
+        //            .Where(e => e.Category.Id == categoryId).ToArray();
 
-            return View(eventsViewModel);
-        }
+        //    return View(eventsViewModel);
+        //}
 
         public async Task<IActionResult> Details([FromRoute] int id)
         {

@@ -56,6 +56,20 @@
         }
     }
 
+    async function getCategory(id) {
+        const response = await fetch(`/api/v1/categories/${id}`,
+            {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+        if (response.ok === true) {
+            const category = await response.json();
+            const form = document.forms["categoryForm"];
+            form.elements["id"].value = category.id;
+            form.elements["name"].value = category.name;
+        }
+    }
+
     // не понимаю, почему после создания категории удалить я ее могу только после обновления страницы
     // что я пропустил?
     async function createCategory(categoryName) {
