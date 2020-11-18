@@ -39,7 +39,7 @@ namespace TicketReSail.Core.Services
 
         public async Task<OperationDetails> Create(CategoryDTO categoryDto)
         {
-            var category = new Category{Name = categoryDto.Name};
+            var category = new Category{ Name = categoryDto.Name };
 
             var result = _context.Categories.FirstOrDefault(c => c.Name.Equals(categoryDto.Name));
 
@@ -51,7 +51,7 @@ namespace TicketReSail.Core.Services
             }
             else
             {
-                return new OperationDetails(false, "The category with th name still exists!", "Name");
+                return new OperationDetails(false, @$"The category with name ""{categoryDto.Name}"" still exists!", "Name");
             }
         }
 

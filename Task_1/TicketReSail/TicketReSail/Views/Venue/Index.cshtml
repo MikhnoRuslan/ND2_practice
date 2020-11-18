@@ -1,34 +1,248 @@
-﻿@using TicketReSail.Core.Interface
-@model IEnumerable<TicketReSail.DAL.Model.Venue>
-@inject IVenueService Venue
-
+﻿
 @{
-    ViewData["Title"] = "Create venue";
+    ViewData["Title"] = "Create city";
 }
 
-<a asp-action="CreateVenue">Create venue</a>
-
-<table class="table">
-    <tr><th>Name</th><th>Address</th><th>City</th></tr>
-    @foreach (var venue in Model)
-    {
-        <tr>
-            <td>@venue.Name</td>
-            <td>@venue.Address</td>
-            <td>@Venue.GetCityNameByVenueId(venue.Id)</td>
-        <td>
-            <form asp-action="DeleteVenue" asp-route-id="@venue.Id" method="post">
-                <button type="submit" class="btn btn-sm btn-primary">Delete</button>
-            </form>
-        </td>
-    </tr>
-}
-</table>
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <div>
+                <div id="error" class="alert alert-danger" style="display:none;"></div>
+                <form name="venueForm">
+                    <input type="hidden" name="id" value="0" />
+                    <div class="form-group">
+                        <label for="name">Venue:</label>
+                        <input name="name" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address:</label>
+                        <input name="address" class="form-control" />
+                    </div>
+                    <div>
+                        <label for="cityId">City:</label>
+                        <select id="cities" name="cities" class="form-control">
+                            <option disabled selected>Choose city</option>
+                        </select>
+                    </div>
+                    <hr />
+                    <div class="form-group">
+                        <button type="submit" id="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-9">
+            <table class="table">
+                <tr>
+                    <td>Name</td>
+                    <td>Address</td>
+                    <td>City</td>
+                </tr>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <div>
     <a asp-controller="Admin" asp-action="Index">Back to List</a>
 </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+<script type="text/javascript">
+
+    const url = "/api/v1/Venues";
+    const jsonType = "application/jcon";
+
+    //$.ajax({
+    //    url: "/api/v1/cities",
+    //    method: "GET",
+    //    dataType: "json",
+    //    success: function(data) {
+    //        $.each(data,
+    //            function(data) {
+    //                $('#cities').append(`<option value="${data.id}">${data.name}</option>`);
+    //            });
+    //    }
+    //});
+
+    async function getVenues() {
+        const response = await fetch(url,
+            {
+                method: "GET",
+                headers: { "Accept": jsonType }
+            });
+        if (response.ok === true) {
+
+            const venues = await response.json();
+            let rows = document.querySelector("tbody");
+            venues.forEach(venue => {
+                rows.append(row(venue));
+            });
+        }
+    }
+
+    async function getVenue(id) {
+        const response = await fetch(url + "/" + id,
+            {
+                method: "GET",
+                headers: { "Accept": jsonType }
+            });
+        if(response.ok === true) {
+            const venue = await response.json();
+            const form = document.form["venueForm"];
+            form.elements["id"].value = venue.id;
+            form.elements["name"].value = venue.name;
+            form.elements["address"].value = venue.address;
+            form.elements["cityId"].value = venue.cityId;
+        }
+    }
+
+    async function createVenue(venueName, venueAddress, cityId) {
+        const response = await fetch( url,
+            {
+                method: "POST",
+                headers: { "Accept": jsonType, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: venueName,
+                    address: venueAddress,
+                    cityId: cityId
+                })
+            });
+        if (response.ok === true) {
+            const venue = await response.json();
+            reset();
+            document.querySelector("tbody").append(row(venue));
+        } else {
+            const errorData = await response.json();
+            console.log("error", errorData);
+            if (errorData) {
+
+                if (errorData.errors) {
+
+                    if (errorData.error["Name"]) {
+                        addError(errorData.errors["Name"]);
+                    }
+                }
+
+                if (errorData["Name"]) {
+                    addError(errorData["Name"]);
+                }
+            }
+
+            document.getElementById("error").style.display = "block";
+        }
+    }
+
+    async function editVenue(venueId, venueName, venueAddress, cityId) {
+        const response = await fetch(url,
+            {
+                method: "PUT",
+                headers: { "Accept": jsonType, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: parseInt(venueId, 10),
+                    name: venueName,
+                    address: venueAddress,
+                    cityId: parseInt(cityId, 10)
+                })
+            });
+        if(response.ok === true) {
+            const venue = await response.json();
+            reset();
+            document.querySelector(`tr[data-rowid='${venue.id}']`).replaceWith(row(venue));
+        }
+    }
+
+    async function deleteVenue(id) {
+        const response = await fetch( url + "/" + id,
+            {
+                method: "DELETE",
+                headers: { "Accept": jsonType }
+            });
+        if (response.ok === true) {
+            const venue = await response.json();
+            document.querySelector(`tr[data-rowid='${venue.id}']`).remove();
+        }
+    }
+
+    function reset() {
+        const form = document.forms["venueForm"];
+        form.reset();
+        form.elements["id"].value = 0;
+    }
+
+    function addError(errors) {
+        errors.forEach(error => {
+            const p = document.createElement("p");
+            p.append(error);
+            document.getElementById("error").append(p);
+        });
+    }
+
+    function row(venue) {
+        const tr = document.createElement("tr");
+        tr.setAttribute("data-rowid", venue.id);
+
+        const nameTd = document.createElement("td");
+        nameTd.append(venue.name);
+        tr.append(nameTd);
+
+        const addressTd = document.createElement("td");
+        addressTd.append(venue.address);
+        tr.append(addressTd);
+
+        const cityIdTd = document.createElement("td");
+        cityIdTd.append(venue.cityId);
+        tr.append(cityIdTd);
+
+        const linksTd = document.createElement("td");
+
+        const editLink = document.createElement("a");
+        editLink.setAttribute("data-id", venue.id);
+        editLink.setAttribute("type", "submit");
+        editLink.setAttribute("class", "btn btn-sm btn-primary");
+        editLink.append("Edit");
+        editLink.addEventListener("click", e => {
+ 
+            e.preventDefault();
+            getVenue(venue.id);
+        });
+        linksTd.append(editLink);
+
+        const removeLink = document.createElement("a");
+        removeLink.setAttribute("data-id", venue.id);
+        removeLink.setAttribute("type", "submit");
+        removeLink.setAttribute("class", "btn btn-sm btn-primary");
+        removeLink.append("Delete");
+        removeLink.addEventListener("click", e => {
+
+            e.preventDefault();
+            deleteVenue(venue.id);
+        });
+
+        linksTd.append(removeLink);
+        tr.appendChild(linksTd);
+
+        return tr;
+    }
+
+    // send form
+    document.forms["venueForm"].addEventListener("submit",
+        e => {
+            e.preventDefault();
+            document.getElementById("error").innerHTML = "";
+            document.getElementById("error").style.display = "none";
+
+            const form = document.forms["venueForm"];
+            const id = form.elements["id"].value;
+            const name = form.elements["name"].value;
+            const address = form.elements["address"].value;
+            const cityId = form.elements["cityId"].value;
+            if (id == 0)
+                createVenue(name, address, cityId);
+            else
+                editVenue(id, name, address, cityId);
+        });
+
+    getVenues();
+
+</script>

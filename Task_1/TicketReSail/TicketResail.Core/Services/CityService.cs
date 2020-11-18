@@ -30,6 +30,12 @@ namespace TicketReSail.Core.Services
             return result?.Id ?? default;
         }
 
+        public async Task<City> GetCityBuId(int id)
+        {
+            var city = await _context.Cities.FindAsync(id);
+            return city ?? null;
+        }
+
         public async Task<OperationDetails> Create(CityDTO cityDto)
         {
             var city = new City {Name = cityDto.Name};

@@ -27,15 +27,25 @@ namespace TicketReSail.Controllers.Api
         /// </summary>
         /// <returns>List of categories</returns>
 
-        // GET: api/Categories
+        // GET: api/v1/Categories
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IEnumerable<Category>> GetCategories()
         {
             return await _categoryService.GetCategories();
         }
 
-        // GET: api/Categories/5
+        /// <summary>
+        /// Get category by id
+        /// </summary>
+        /// <param name="id"> Category id </param>
+        /// <returns> Get category </returns>
+        
+        // GET: api/v1/Categories/5
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Category>> GetCategory(int id)
         {
             var category = await _categoryService.GetCategoryById(id);
@@ -48,33 +58,43 @@ namespace TicketReSail.Controllers.Api
         /// <summary>
         /// Create category
         /// </summary>
-        /// <param name="categoryView">Entered category characteristics</param>
-        /// <returns>Added category</returns>
+        /// <param name="categoryView"> Entered category characteristics </param>
+        /// <returns> Added category </returns>
 
-        // POST api/categories
+        // POST api/v1/categories
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CreateCategory(CategoryViewModel categoryView)
         {
-            if (ModelState.IsValid)
-            {
-                var categoryDto = new CategoryDTO { Name = categoryView.Name };
-                var operationDetails = await _action.Create(categoryDto);
-                if (operationDetails.Succeeded)
-                    return CreatedAtAction("GetCategory", new {id = _categoryService.GetCategoryIdByName(categoryDto.Name)}, categoryView);
-                else
-                {
-                    ModelState.AddModelError(operationDetails.Property, operationDetails.Message);
-                    return NotFound();
-                }
-            }
+            //TODO validation 
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return NotFound();
+            var categoryDto = new CategoryDTO { Name = categoryView.Name };
+            var operationDetails = await _action.Create(categoryDto);
+
+            if (operationDetails.Succeeded)
+            {
+                categoryView.Id = _categoryService.GetCategoryIdByName(categoryDto.Name);
+                return CreatedAtAction("GetCategory", new { id = categoryView.Id }, categoryView);
+            }
+            else
+            {
+                ModelState.AddModelError(operationDetails.Property, operationDetails.Message);
+                return BadRequest(ModelState);
+            }
         }
 
-        // DELETE api/categories/5
+        /// <summary>
+        /// Remove category by id
+        /// </summary>
+        /// <param name="id"> Category id </param>
+        // DELETE api/v1/categories/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Category>> Delete(int id)
         {
             var category = await _action.Delete(id);

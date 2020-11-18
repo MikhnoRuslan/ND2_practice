@@ -65,7 +65,7 @@ namespace TicketReSail.Controllers
         public async Task<IActionResult> CreateEvent([FromQuery] VenueQuery venueQuery)
         {
             ViewBag.Categories = new SelectList(await _categoryService.GetCategories(), "Id", "Name");
-            ViewBag.Venues = new SelectList(await _venueService.GetVenues(venueQuery), "Id", "Name");
+            ViewBag.Venues = new SelectList(await _venueService.GetVenuesByQuery(venueQuery), "Id", "Name");
 
             var eventsViewModel = new EventsViewModel
             {

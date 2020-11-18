@@ -25,7 +25,7 @@ namespace TicketReSail.Controllers
 
         public async Task<IActionResult> Index([FromQuery] VenueQuery venueQuery)
         {
-            return View(await _venueService.GetVenues(venueQuery));
+            return View(await _venueService.GetVenuesByQuery(venueQuery));
         }
 
         public async Task<IActionResult> CreateVenue()

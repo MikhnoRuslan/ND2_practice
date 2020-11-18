@@ -9,6 +9,11 @@ namespace TicketReSail.Mapper
         public MappingProfile()
         {
             CreateMap<Venue, VenueDTO>();
+
+            CreateMap<Category, CategoryDTO>()
+                .ForMember(cDTO => cDTO.Id, opt => opt.MapFrom(c => c.Id))
+                .ForMember(cDTO => cDTO.Name, opt => opt.MapFrom(c => c.Name))
+                .ForAllOtherMembers(opt => opt.Ignore());
         }
     }
 }
