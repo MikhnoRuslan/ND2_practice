@@ -1,28 +1,41 @@
-﻿@model IEnumerable<TicketReSail.DAL.Model.Category>
-@{
+﻿@{
     ViewData["Title"] = "Create category";
 }
 
-<a asp-action="CreateCategory">Create category</a>
-
-<table class="table">
-    @foreach (var category in Model)
-    {
-        <tr>
-            <td>@category.Name</td>
-            <td>
-                <form asp-action="DeleteCategory" asp-route-id="@category.Id" method="post">
-                    <button type="submit" class="btn btn-sm btn-primary">Delete</button>
+<div class="container">
+    <div class="row">
+        <div class="col-4">
+            <div>
+                <div id="error" class="alert alert-danger" style="display:none;"></div>
+                <form name="categoryForm">
+                    <input type="hidden" name="id" value="0"/>
+                    <div class="form-group">
+                        <label for="name">Category:</label>
+                        <input name="name" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" id="submit" class="btn btn-primary">Create</button>
+                    </div>
                 </form>
-            </td>
-        </tr>
-    }
-</table>
+            </div>
+        </div>
+        <div class="col-8">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 
 <div>
     <a asp-controller="Admin" asp-action="Index">Back to List</a>
 </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+<script type="text/javascript" src="dist/category.entry.js"></script>

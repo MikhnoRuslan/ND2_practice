@@ -7,7 +7,7 @@ namespace TicketReSail.DAL.Model
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Enter name category")]
         public string Name { get; set; }
 
         public ICollection<Event> Events { get; set; }

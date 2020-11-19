@@ -10,7 +10,7 @@ using TicketReSail.DAL.Model;
 
 namespace TicketReSail.Core.Services
 {
-    public class CategoryService : ICategoryService, IAction<CategoryDTO>
+    public class CategoryService : ICategoryService, IAction<CategoryDTO, Category>
     {
         private readonly TicketsContext _context;
 
@@ -24,9 +24,22 @@ namespace TicketReSail.Core.Services
             return await _context.Categories.ToListAsync();
         }
 
+        public async Task<Category> GetCategoryById(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+
+            return category ?? null;
+        }
+
+        public int GetCategoryIdByName(string name)
+        {
+            var category = _context.Categories.FirstOrDefault(c => c.Name.Equals(name));
+            return category?.Id ?? default;
+        }
+
         public async Task<OperationDetails> Create(CategoryDTO categoryDto)
         {
-            var category = new Category{Name = categoryDto.Name};
+            var category = new Category{ Name = categoryDto.Name };
 
             var result = _context.Categories.FirstOrDefault(c => c.Name.Equals(categoryDto.Name));
 
@@ -38,17 +51,19 @@ namespace TicketReSail.Core.Services
             }
             else
             {
-                return new OperationDetails(false, "The category with th name still exists!", "Name");
+                return new OperationDetails(false, @$"The category with name ""{categoryDto.Name}"" still exists!", "Name");
             }
         }
 
-        public async Task Delete(int id)
+        public async Task<Category> Delete(int id)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category != null)
                 _context.Categories.Remove(category);
 
             await _context.SaveChangesAsync();
+
+            return category;
         }
     }
 }

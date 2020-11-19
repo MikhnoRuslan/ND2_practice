@@ -9,7 +9,7 @@ namespace TicketReSail.Core.Interface
         int GetEventIdByTicketId(int ticketId);
         decimal GetPriceByTicketId(int ticketId);
         bool GetStatusBoughtByTicketId(int id);
-        void ChangeStatusToWaitingConfirmedByTicketId(int id);
         Task<IEnumerable<Ticket>> GetTicketsForSell(string status, string userName);
+        Task<IEnumerable<Ticket>> GetTickets();
     }
 }

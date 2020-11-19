@@ -1,17 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using MailKit.Search;
 using Microsoft.EntityFrameworkCore;
+using TicketReSail.Core.Helpers;
 using TicketReSail.Core.Infrastructure;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
+using TicketReSail.Core.Queries;
 using TicketReSail.DAL;
 using TicketReSail.DAL.Model;
 
 namespace TicketReSail.Core.Services
 {
-    public class EventService : IEventService, IAction<EventDTO>
+    public class EventService : IEventService, IAction<EventDTO, Event>
     {
         private readonly TicketsContext _context;
         private readonly IVenueService _venueService;
@@ -29,9 +34,39 @@ namespace TicketReSail.Core.Services
             return await _context.Events.FindAsync(id);
         }
 
-        public async Task<IEnumerable<Event>> GetEvents()
+        public async Task<PagedResult<Event>> GetEvents(EventQuery eventQuery)
         {
-            return await _context.Events.ToListAsync();
+            var queryable = _context.Events.AsQueryable();
+
+            if (eventQuery.Venues != null)
+                queryable = queryable.Where(e => eventQuery.Venues.Contains(e.VenueId));
+
+            if (eventQuery.FistDataTime != null)
+                queryable = queryable.Where(e => e.Date >= eventQuery.FistDataTime);
+
+            if (eventQuery.SecondDataTime != null)
+                queryable = queryable.Where(e => e.Date <= eventQuery.SecondDataTime);
+
+            Expression<Func<Event, object>> sortExpression = eventQuery.SortBy switch
+            {
+                "Date" => e => e.Date,
+                "Venue" => e => e.VenueId,
+                _ => e => e.Id
+            };
+
+            queryable = eventQuery.SortOrder switch
+            {
+                SortOrder.Descending => queryable.OrderByDescending(sortExpression),
+                _ => queryable.OrderBy(sortExpression)
+            };
+
+            var count = await queryable.CountAsync();
+
+            queryable = queryable.ApplyPagination(eventQuery);
+
+            var item = await queryable.ToListAsync();
+
+            return new PagedResult<Event> { TotalCount = count, Items = item };
         }
 
         public string GetEventNameByTicketId(int ticketId)
@@ -78,13 +113,15 @@ namespace TicketReSail.Core.Services
             }
         }
 
-        public async Task Delete(int id)
+        public async Task<Event> Delete(int id)
         {
             var @event = await _context.Events.FindAsync(id);
             if (@event != null)
                 _context.Events.Remove(@event);
 
             await _context.SaveChangesAsync();
+
+            return @event;
         }
 
         private byte[] ConvertImageToByte(EventDTO modeDto)

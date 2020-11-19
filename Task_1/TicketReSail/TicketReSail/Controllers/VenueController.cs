@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
+using TicketReSail.Core.Queries;
+using TicketReSail.DAL.Model;
 using TicketReSail.Models;
 
 namespace TicketReSail.Controllers
@@ -11,18 +13,19 @@ namespace TicketReSail.Controllers
     {
         private readonly IVenueService _venueService;
         private readonly ICityService _cityService;
-        private readonly IAction<VenueDTO> _action;
+        private readonly IAction<VenueDTO, Venue> _action;
 
-        public VenueController(IVenueService venueService, ICityService cityService, IAction<VenueDTO> action)
+        public VenueController(IVenueService venueService, ICityService cityService,
+            IAction<VenueDTO, Venue> action)
         {
             _venueService = venueService;
             _cityService = cityService;
             _action = action;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromQuery] VenueQuery venueQuery)
         {
-            return View(await _venueService.GetVenues());
+            return View(await _venueService.GetVenuesByQuery(venueQuery));
         }
 
         public async Task<IActionResult> CreateVenue()

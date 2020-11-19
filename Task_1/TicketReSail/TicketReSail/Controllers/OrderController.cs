@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
@@ -6,14 +7,16 @@ using TicketReSail.DAL.Model;
 
 namespace TicketReSail.Controllers
 {
+    [Authorize]
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
-        private readonly IAction<OrderDTO> _action;
+        private readonly IAction<OrderDTO, Order> _action;
         private readonly IUserService _userService;
         private readonly ITickerService _tickerService;
 
-        public OrderController(IOrderService orderService, IAction<OrderDTO> action, IUserService userService, ITickerService tickerService)
+        public OrderController(IOrderService orderService, IAction<OrderDTO, Order> action,
+            IUserService userService, ITickerService tickerService)
         {
             _orderService = orderService;
             _action = action;
@@ -79,8 +82,6 @@ namespace TicketReSail.Controllers
             };
 
             await _action.Create(orderDto);
-
-            _tickerService.ChangeStatusToWaitingConfirmedByTicketId(ticketId);
 
             return RedirectToAction("Buy", new {status = Constants.Waiting});
         }
