@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
-using TicketReSail.Core.Queries;
 using TicketReSail.DAL.Model;
 using TicketReSail.Models;
 

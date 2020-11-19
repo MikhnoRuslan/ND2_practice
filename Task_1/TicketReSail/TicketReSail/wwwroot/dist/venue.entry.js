@@ -20,10 +20,14 @@ async function fillCitySelector() {
         for (const city of cities) {
             const option = document.createElement('option');
             option.value = city.id;
-            option.append(city.name);
+            option.append(city.id);
             selector.append(option);
         }
     }
+}
+
+function singleSelectChangeValue() {
+    var selValue = document.getElementById("cities").value;
 }
 
 fillCitySelector();
@@ -51,6 +55,7 @@ async function getVenues() {
 
         const venues = await response.json();
         let rows = document.querySelector("tbody");
+
         venues.forEach(venue => {
             rows.append(row(venue));
         });
@@ -73,7 +78,7 @@ async function getVenue(id) {
     }
 }
 
-async function createVenue(venueName, venueAddress, cityId) {
+async function createVenue(venueName, venueAddress, citiId) {
     const response = await fetch(url,
         {
             method: "POST",
@@ -81,7 +86,7 @@ async function createVenue(venueName, venueAddress, cityId) {
             body: JSON.stringify({
                 name: venueName,
                 address: venueAddress,
-                cityId: cityId
+                cityId: citiId
             })
         });
     if (response.ok === true) {
@@ -155,6 +160,9 @@ function addError(errors) {
 }
 
 function row(venue) {
+
+    venue.city = getCity(venue.cityId);
+
     const tr = document.createElement("tr");
     tr.setAttribute("data-rowid", venue.id);
 
@@ -167,7 +175,7 @@ function row(venue) {
     tr.append(addressTd);
 
     const cityIdTd = document.createElement("td");
-    cityIdTd.append(getCity(venue.cityId));
+    cityIdTd.append(venue.city.name);
     tr.append(cityIdTd);
 
     const linksTd = document.createElement("td");
@@ -207,16 +215,17 @@ document.forms["venueForm"].addEventListener("submit",
         e.preventDefault();
         document.getElementById("error").innerHTML = "";
         document.getElementById("error").style.display = "none";
+        document.getElementById("cityId");
 
         const form = document.forms["venueForm"];
         const id = form.elements["id"].value;
         const name = form.elements["name"].value;
         const address = form.elements["address"].value;
-        const cityId = form.elements["cityId"].value;
+        // const cityId = form.elements["cityId"].value;
         if (id == 0)
-            createVenue(name, address, cityId);
+            createVenue(name, address, singleSelectChangeValue());
         else
-            editVenue(id, name, address, cityId);
+            editVenue(id, name, address, singleSelectChangeValue());
     });
 
 getVenues();
