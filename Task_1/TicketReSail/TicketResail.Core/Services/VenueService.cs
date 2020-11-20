@@ -43,12 +43,19 @@ namespace TicketReSail.Core.Services
 
         public async Task<Venue> GetVenueById(int id)
         {
-            return await _context.Venues.FindAsync(id);
+            var venue = await _context.Venues
+                .Include(c => c.City)
+                .SingleOrDefaultAsync(c => c.Id == id);
+
+            return venue;
         }
 
         public async Task<IEnumerable<Venue>> GetVenues()
         {
-            return await _context.Venues.ToListAsync();
+            var venue = _context.Venues
+                .Include(c => c.City);
+
+            return await venue.ToListAsync();
         }
 
         public async Task<IEnumerable<Venue>> GetVenuesByQuery(VenueQuery venueQuery)

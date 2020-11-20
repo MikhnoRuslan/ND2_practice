@@ -27,7 +27,7 @@ async function fillCitySelector() {
 }
 
 function singleSelectChangeValue() {
-    var selValue = document.getElementById("cities").value;
+    document.getElementById("cities").value;
 }
 
 fillCitySelector();
@@ -221,11 +221,11 @@ document.forms["venueForm"].addEventListener("submit",
         const id = form.elements["id"].value;
         const name = form.elements["name"].value;
         const address = form.elements["address"].value;
-        // const cityId = form.elements["cityId"].value;
+        const cityId = form.elements["cityId"].value;
         if (id == 0)
-            createVenue(name, address, singleSelectChangeValue());
+            createVenue(name, address, cityId);
         else
-            editVenue(id, name, address, singleSelectChangeValue());
+            editVenue(id, name, address, cityId);
     });
 
 getVenues();

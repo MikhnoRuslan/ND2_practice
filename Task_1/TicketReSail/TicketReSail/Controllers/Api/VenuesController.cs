@@ -15,13 +15,13 @@ namespace TicketReSail.Controllers.Api
     public class VenuesController : ControllerBase
     {
         private readonly IVenueService _venueService;
-        private readonly IMapper _mapper;
+        //private readonly IMapper _mapper;
         private readonly IAction<VenueDTO, Venue> _action;
 
-        public VenuesController(IVenueService venueService, IMapper mapper, IAction<VenueDTO, Venue> action)
+        public VenuesController(IVenueService venueService, /*IMapper mapper,*/ IAction<VenueDTO, Venue> action)
         {
             _venueService = venueService;
-            _mapper = mapper;
+            //_mapper = mapper;
             _action = action;
         }
 
