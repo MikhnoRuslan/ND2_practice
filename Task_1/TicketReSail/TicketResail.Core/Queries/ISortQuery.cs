@@ -1,10 +1,11 @@
 ﻿using MailKit.Search;
+using TicketReSail.Core.Enuns;
 
 namespace TicketReSail.Core.Queries
 {
     public interface ISortQuery
     {
-        public string SortBy { get; set; }
+        public SortBy SortBy { get; set; }
         public SortOrder SortOrder { get; set; }
     }
 }

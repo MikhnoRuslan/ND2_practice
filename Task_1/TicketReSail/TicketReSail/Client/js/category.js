@@ -1,6 +1,28 @@
 ﻿const url = "/api/v1/categories";
 const jsonType = "application/jcon";
 
+async function fillCategorySelector() {
+    const response = await fetch("/api/v1/categories",
+        {
+            method: "GET",
+            headers: { 'Accept': jsonType },
+        });
+    if (response.ok === true) {
+
+        const categories = await response.json();
+        let selector = document.querySelector('#categories');
+        for (const category of categories) {
+            const option = document.createElement('option');
+            option.value = category.id;
+            option.append(category.name);
+            selector.append(option);
+            console.log(option);
+        }
+    }
+}
+
+fillCategorySelector()
+
 async function getCategories() {
     const response = await fetch(url,
         {

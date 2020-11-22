@@ -7,7 +7,8 @@ module.exports = {
         validation: './js/validation.js',
         category: './js/category.js',
         city: './js/city.js',
-        venue: './js/venue.js'
+        venue: './js/venue.js',
+        event: './js/event.js'
     },
     output: {
         filename: '[name].entry.js',

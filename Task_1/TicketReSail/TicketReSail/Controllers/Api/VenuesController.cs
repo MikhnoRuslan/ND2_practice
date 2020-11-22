@@ -76,6 +76,9 @@ namespace TicketReSail.Controllers.Api
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        //не работает. не получается передать id города
+
         public async Task<IActionResult> CreateVenue(VenueViewModel venueViewModel)
         {
             //TODO validation of null
@@ -145,7 +148,7 @@ namespace TicketReSail.Controllers.Api
             {
                 Name = venueView.Name,
                 Address = venueView.Address,
-                CityId = venueView.Id
+                CityId = venueView.CityId
             };
 
             return venueDTO;

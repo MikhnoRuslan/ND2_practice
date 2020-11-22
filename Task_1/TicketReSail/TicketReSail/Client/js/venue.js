@@ -1,43 +1,26 @@
 ﻿const url = "/api/v1/Venues";
 const jsonType = "application/jcon";
 
-async function fillCitySelector() {
-    const response = await fetch("/api/v1/cities",
+async function fillVenueSelector() {
+    const response = await fetch("/api/v1/venues",
         {
             method: "GET",
             headers: { 'Accept': jsonType },
         });
     if (response.ok === true) {
 
-        const cities = await response.json();
-        let selector = document.querySelector('#cities');
-        for (const city of cities) {
+        const venues = await response.json();
+        let selector = document.querySelector('#venues');
+        for (const venue of venues) {
             const option = document.createElement('option');
-            option.value = city.id;
-            option.append(city.id);
+            option.value = venue.id;
+            option.append(venue.name);
             selector.append(option);
         }
     }
 }
 
-function singleSelectChangeValue() {
-    document.getElementById("cities").value;
-}
-
-fillCitySelector();
-
-async function getCity(id) {
-    const response = await fetch(url + "/" + id,
-        {
-            method: "GET",
-            headers: { "Accept": jsonType }
-        });
-    if (response.ok === true) {
-        const city = await response.json();
-
-        return await city.name;
-    }
-}
+fillVenueSelector()
 
 async function getVenues() {
     const response = await fetch(url,
@@ -108,25 +91,6 @@ async function createVenue(venueName, venueAddress, citiId) {
     }
 }
 
-async function editVenue(venueId, venueName, venueAddress, cityId) {
-    const response = await fetch(url,
-        {
-            method: "PUT",
-            headers: { "Accept": jsonType, "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id: parseInt(venueId, 10),
-                name: venueName,
-                address: venueAddress,
-                cityId: parseInt(cityId, 10)
-            })
-        });
-    if (response.ok === true) {
-        const venue = await response.json();
-        reset();
-        document.querySelector(`tr[data-rowid='${venue.id}']`).replaceWith(row(venue));
-    }
-}
-
 async function deleteVenue(id) {
     const response = await fetch(url + "/" + id,
         {
@@ -155,8 +119,6 @@ function addError(errors) {
 
 function row(venue) {
 
-    venue.city = getCity(venue.cityId);
-
     const tr = document.createElement("tr");
     tr.setAttribute("data-rowid", venue.id);
 
@@ -173,18 +135,6 @@ function row(venue) {
     tr.append(cityIdTd);
 
     const linksTd = document.createElement("td");
-
-    const editLink = document.createElement("a");
-    editLink.setAttribute("data-id", venue.id);
-    editLink.setAttribute("type", "submit");
-    editLink.setAttribute("class", "btn btn-sm btn-primary");
-    editLink.append("Edit");
-    editLink.addEventListener("click", e => {
-
-        e.preventDefault();
-        getVenue(venue.id);
-    });
-    linksTd.append(editLink);
 
     const removeLink = document.createElement("a");
     removeLink.setAttribute("data-id", venue.id);
@@ -209,13 +159,12 @@ document.forms["venueForm"].addEventListener("submit",
         e.preventDefault();
         document.getElementById("error").innerHTML = "";
         document.getElementById("error").style.display = "none";
-        document.getElementById("cityId");
-
+    
         const form = document.forms["venueForm"];
         const id = form.elements["id"].value;
         const name = form.elements["name"].value;
         const address = form.elements["address"].value;
-        const cityId = form.elements["cityId"].value;
+        const cityId = form.selector["cityId"].value;
         if (id == 0)
             createVenue(name, address, cityId);
         else

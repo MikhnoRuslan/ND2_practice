@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MailKit.Search;
 using Microsoft.EntityFrameworkCore;
+using TicketReSail.Core.Enuns;
 using TicketReSail.Core.Helpers;
 using TicketReSail.Core.Infrastructure;
 using TicketReSail.Core.Interface;
@@ -36,21 +37,29 @@ namespace TicketReSail.Core.Services
 
         public async Task<PagedResult<Event>> GetEvents(EventQuery eventQuery)
         {
-            var queryable = _context.Events.AsQueryable();
+            var queryable = _context.Events
+                .Include(c => c.Category)
+                .Include(e => e.Venue)
+                .ThenInclude(c => c.City)
+                .AsQueryable();
 
             if (eventQuery.Venues != null)
                 queryable = queryable.Where(e => eventQuery.Venues.Contains(e.VenueId));
 
-            if (eventQuery.FistDataTime != null)
-                queryable = queryable.Where(e => e.Date >= eventQuery.FistDataTime);
+            if (eventQuery.FromDateTime != default)
+                queryable = queryable.Where(e => e.Date >= eventQuery.FromDateTime);
 
-            if (eventQuery.SecondDataTime != null)
-                queryable = queryable.Where(e => e.Date <= eventQuery.SecondDataTime);
+            if (eventQuery.ToDateTime != default)
+                queryable = queryable.Where(e => e.Date <= eventQuery.ToDateTime);
+
+            if (eventQuery.EventName != null)
+                queryable = queryable.Where(e => e.Name.Equals(eventQuery.EventName));
 
             Expression<Func<Event, object>> sortExpression = eventQuery.SortBy switch
             {
-                "Date" => e => e.Date,
-                "Venue" => e => e.VenueId,
+                SortBy.Date => e => e.Date,
+                SortBy.Venue => e => e.VenueId,
+                SortBy.City => e => e.Venue.City.Id,
                 _ => e => e.Id
             };
 
