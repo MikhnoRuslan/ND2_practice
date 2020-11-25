@@ -9,13 +9,6 @@ namespace TicketReSail.Mapper
     {
         public MappingProfile()
         {
-            CreateMap<Venue, VenueDTO>();
-
-            CreateMap<Category, CategoryDTO>()
-                .ForMember(cDTO => cDTO.Id, opt => opt.MapFrom(c => c.Id))
-                .ForMember(cDTO => cDTO.Name, opt => opt.MapFrom(c => c.Name))
-                .ForAllOtherMembers(opt => opt.Ignore());
-
             CreateMap<Event, EventResource>()
                 .ForMember(eDTO => eDTO.Id, opt => opt.MapFrom(e => e.Id))
                 .ForMember(eDTO => eDTO.Name, opt => opt.MapFrom(e => e.Name))
@@ -25,6 +18,14 @@ namespace TicketReSail.Mapper
                 .ForMember(eDTO => eDTO.VenueId, opt => opt.MapFrom(e => e.VenueId))
                 .ForMember(eDTO => eDTO.Category, opt => opt.MapFrom(e => e.Category))
                 .ForMember(eDTO => eDTO.Venue, opt => opt.MapFrom(e => e.Venue))
+                .ForPath(eDTO => eDTO.Venue.City.Name, opt => opt.MapFrom(e => e.Venue.City.Name))
+                .ForAllOtherMembers(opt => opt.Ignore());
+
+            CreateMap<Venue, VenueResource>()
+                .ForMember(v => v.Id, opt => opt.MapFrom(v => v.Id))
+                .ForMember(v => v.Name, opt => opt.MapFrom(v => v.Name))
+                .ForMember(v => v.Address, opt => opt.MapFrom(v => v.Address))
+                .ForMember(v => v.City, opt => opt.MapFrom(v => v.City))
                 .ForAllOtherMembers(opt => opt.Ignore());
         }
     }

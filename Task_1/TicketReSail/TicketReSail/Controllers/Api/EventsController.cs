@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -30,6 +31,22 @@ namespace TicketReSail.Controllers.Api
             HttpContext.Response.Headers.Add("x-total-count", pageResult.TotalCount.ToString());
 
             return Ok(_mapper.Map<IEnumerable<EventResource>>(pageResult.Items));
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search()
+        {
+            try
+            {
+                var term = HttpContext.Request.Query["term"].ToString();
+                var postTitle = await _eventService.Search(term);
+
+                return Ok(postTitle);
+            }
+            catch (Exception )
+            {
+                return BadRequest();
+            }
         }
     }
 }

@@ -35,8 +35,11 @@ namespace TicketReSail.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var model = new  EventsViewModel
+            var model = new EventsViewModel
             {
+                Categories = await _categoryService.GetCategories(),
+                Cities = await _cityService.GetCities(),
+
                 SortBy = new SelectList(new List<SortBy>()
                 {
                     SortBy.Date,

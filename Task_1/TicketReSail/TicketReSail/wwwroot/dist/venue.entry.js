@@ -7,27 +7,6 @@
 ﻿const url = "/api/v1/Venues";
 const jsonType = "application/jcon";
 
-async function fillVenueSelector() {
-    const response = await fetch("/api/v1/venues",
-        {
-            method: "GET",
-            headers: { 'Accept': jsonType },
-        });
-    if (response.ok === true) {
-
-        const venues = await response.json();
-        let selector = document.querySelector('#venues');
-        for (const venue of venues) {
-            const option = document.createElement('option');
-            option.value = venue.id;
-            option.append(venue.name);
-            selector.append(option);
-        }
-    }
-}
-
-fillVenueSelector()
-
 async function getVenues() {
     const response = await fetch(url,
         {

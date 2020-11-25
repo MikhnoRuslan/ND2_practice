@@ -1,16 +1,23 @@
 import $, { get } from 'jquery';
+import "bootstrap";
+import "bootstrap-select";
 
 const filters = {
-    pageSize: 8,
+    pageSize: 6,
     page: 1,
-    city: [],
-    category: [],
-    venue: [],
+    cities: [],
+    categories: [],
+    venues: [],
     fromDateTime: '',
     toDateTime: '',
     sortBy: 0,
-    sortOrder: 0
+    sortOrder: 0,
+    eventName: ''
 };
+
+const filterVenue = {
+    cities: []
+}
 
 function createEvent(event) {
     return `<div class="col mb-4">
@@ -31,13 +38,28 @@ function createEvent(event) {
 $(document).ready(function() { 
     getEvents();
 
-    $("#categoty").on('change', function(){
-        filters.city = $(this).val();
+    $("#postTitle").on('change', function(){
+        filters.eventName = $(this).val();
         getEvents();
     })
 
-    $("#city").on('change', function(){
-        filters.city = $(this).val();
+    $("#categories").on('change', function(){
+        filters.categories = $(this).val();
+        getEvents();
+    })
+
+    $("#cities").on('change', function(){
+        filterVenue.cities = $(this).val();
+        filters.cities = $(this).val();
+        
+        filters.venues = [];
+
+        fillVenuesSelector();
+        getEvents();
+    })
+
+    $("#venues").on('change', function(){
+        filters.venues = $(this).val();
         getEvents();
     })
 
@@ -108,27 +130,53 @@ function zeroFirstFormat(value) {
 }
 
 function dateTime(date) {
-        var current_datetime = new Date(date);
-        var day = zeroFirstFormat(current_datetime.getDate());
-        var month = zeroFirstFormat(current_datetime.getMonth()+1);
-        var year = current_datetime.getFullYear();
+        var currentDatetime = new Date(date);
+        var day = zeroFirstFormat(currentDatetime.getDate());
+        var month = zeroFirstFormat(currentDatetime.getMonth()+1);
+        var year = currentDatetime.getFullYear();
 
         return day + "." + month + "." + year;
 }
 
-// $("#autocomplete").autocomplete({
-//     source: function(response){
-//         $.ajax({
-//             url: "api/v1/events",
-//             dataType: "json",
-//             success: function(data){
-//                 response($.map(data, function(item){
-//                     return {
-//                         label: item.name,
-//                         value: item.name
-//                     }
-//                 }));
-//             }
-//         });
-//     }
-// });
+function createSelector(item) {
+    return `<option value="${item.id}">${item.name}</option>`
+};
+
+function fillCategoriesSelector() {
+    $.ajax({
+        url: "/api/v1/categories",
+        traditional: true,
+        success: function (data) {
+            $("#categories").empty().append($.map(data, createSelector));
+            $("#categories").selectpicker("refresh");
+        }
+    });
+}
+
+fillCategoriesSelector();
+
+function fillCitiesSelector() {
+    $.ajax({
+        url: "/api/v1/cities",
+        traditional: true,
+        success: function(data) {
+            $("#cities").empty().append($.map(data, createSelector));
+            $("#cities").selectpicker("refresh");
+        }
+    })
+}
+
+fillCitiesSelector();
+
+function fillVenuesSelector() {
+    $.ajax({
+        url: "/api/v1/venues",
+        traditional: true,
+        data: filterVenue,
+        success: function(data) {
+            $("#venues").empty().append($.map(data, createSelector));
+            $("#venues").selectpicker("refresh");
+        }
+    })
+}
+

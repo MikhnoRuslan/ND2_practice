@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TicketReSail.Controllers.Api.Models;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
+using TicketReSail.Core.Queries;
 using TicketReSail.DAL.Model;
 using TicketReSail.Models;
 
@@ -15,13 +17,13 @@ namespace TicketReSail.Controllers.Api
     public class VenuesController : ControllerBase
     {
         private readonly IVenueService _venueService;
-        //private readonly IMapper _mapper;
+        private readonly IMapper _mapper;
         private readonly IAction<VenueDTO, Venue> _action;
 
-        public VenuesController(IVenueService venueService, /*IMapper mapper,*/ IAction<VenueDTO, Venue> action)
+        public VenuesController(IVenueService venueService, IMapper mapper, IAction<VenueDTO, Venue> action)
         {
             _venueService = venueService;
-            //_mapper = mapper;
+            _mapper = mapper;
             _action = action;
         }
 
@@ -30,24 +32,28 @@ namespace TicketReSail.Controllers.Api
         /// </summary>
         /// <param name="venueQuery"> Request cityId </param>
         /// <returns> Returns a filtered query by city </returns>
-        //[HttpGet]
-        //[ProducesResponseType(typeof(IEnumerable<VenueDTO>), StatusCodes.Status200OK)]
-        //public async Task<IEnumerable<VenueDTO>> GetVenuesByCity([FromQuery] VenueQuery venueQuery)
-        //{
-        //    return _mapper.Map<IEnumerable<VenueDTO>>(await _venueService.GetVenuesByQuery(venueQuery));
-        //}
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<EventResource>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetVenuesByCity([FromQuery] VenueQuery venueQuery)
+        {
+            var venues = await _venueService.GetVenuesByQuery(venueQuery);
+            var result = _mapper.Map<IEnumerable<VenueResource>>(venues);
+
+            return Ok(result);
+        }
 
         /// <summary>
         /// Get all venues
         /// </summary>
         /// <returns> List of venues </returns>
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IEnumerable<Venue>> GetVenues()
-        {
-            return await _venueService.GetVenues();
-        }
+        //[HttpGet]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public async Task<IEnumerable<Venue>> GetVenues()
+        //{
+        //    return await _venueService.GetVenues();
+        //}
 
         /// <summary>
         /// Get venue by id

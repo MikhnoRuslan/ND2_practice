@@ -35,6 +35,12 @@ namespace TicketReSail.Core.Services
             return await _context.Events.FindAsync(id);
         }
 
+        public async Task<List<string>> Search(string term)
+        {
+            return await _context.Events.Where(e => e.Name.Contains(term))
+                .Select(e => e.Name).ToListAsync();
+        }
+
         public async Task<PagedResult<Event>> GetEvents(EventQuery eventQuery)
         {
             var queryable = _context.Events
@@ -42,6 +48,12 @@ namespace TicketReSail.Core.Services
                 .Include(e => e.Venue)
                 .ThenInclude(c => c.City)
                 .AsQueryable();
+
+            if (eventQuery.Categories != null)
+                queryable = queryable.Where(e => eventQuery.Categories.Contains(e.CategoryId));
+
+            if (eventQuery.Cities != null)
+                queryable = queryable.Where(e => eventQuery.Cities.Contains(e.Venue.CityId));
 
             if (eventQuery.Venues != null)
                 queryable = queryable.Where(e => eventQuery.Venues.Contains(e.VenueId));

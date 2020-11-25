@@ -60,7 +60,9 @@ namespace TicketReSail.Core.Services
 
         public async Task<IEnumerable<Venue>> GetVenuesByQuery(VenueQuery venueQuery)
         {
-            var queryable = _context.Venues.AsQueryable();
+            var queryable = _context.Venues
+                .Include(c => c.City)
+                .AsQueryable();
 
             if (venueQuery.Cities != null)
                 queryable = queryable.Where(v => venueQuery.Cities.Contains(v.CityId));
