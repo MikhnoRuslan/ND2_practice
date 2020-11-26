@@ -1,6 +1,27 @@
 ﻿const url = "/api/v1/Venues";
 const jsonType = "application/jcon";
 
+async function fillCitySelector() {
+    const response = await fetch("/api/v1/cities",
+        {
+            method: "GET",
+            headers: { 'Accept': jsonType },
+        });
+    if (response.ok === true) {
+
+        const cities = await response.json();
+        let selector = document.querySelector('#cities');
+        for (const city of cities) {
+            const option = document.createElement('option');
+            option.value = city.id;
+            option.append(city.name);
+            selector.append(option);
+        }
+    }
+}
+
+fillCitySelector();
+
 async function getVenues() {
     const response = await fetch(url,
         {
