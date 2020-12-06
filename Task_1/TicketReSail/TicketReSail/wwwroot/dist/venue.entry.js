@@ -15,10 +15,6 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-<<<<<<< HEAD
-<<<<<<<< HEAD:TicketReSail/TicketReSail/wwwroot/dist/selector.entry.js
-=======
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "fillCitiesSelector": () => /* binding */ fillCitiesSelector,
 /* harmony export */   "fillCategoriesSelector": () => /* binding */ fillCategoriesSelector,
@@ -67,28 +63,188 @@ function fillVenuesSelector(filterVenue) {
         },
     });
 }
-<<<<<<< HEAD
-========
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var bootstrap_dist_css_bootstrap_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.css */ "./node_modules/bootstrap/dist/css/bootstrap.css");
-/* harmony import */ var bootstrap_select_dist_css_bootstrap_select_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bootstrap-select/dist/css/bootstrap-select.css */ "./node_modules/bootstrap-select/dist/css/bootstrap-select.css");
-/* harmony import */ var _css_site_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../css/site.css */ "./css/site.css");
-﻿//import 'bootstrap';
-;
-//import 'bootstrap-select';
->>>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652:Task_1/TicketReSail/TicketReSail/wwwroot/dist/site.entry.js
-=======
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 
 function createSelector(item) {
     return `<option value="${item.id}">${item.name}</option>`;
 }
 
-<<<<<<< HEAD
-<<<<<<<< HEAD:TicketReSail/TicketReSail/wwwroot/dist/selector.entry.js
-=======
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
+/***/ }),
+
+/***/ "./js/venue.js":
+/*!*********************!*\
+  !*** ./js/venue.js ***!
+  \*********************/
+/*! namespace exports */
+/*! exports [not provided] [no usage info] */
+/*! runtime requirements: __webpack_require__, __webpack_require__.n, __webpack_require__.r, __webpack_exports__, __webpack_require__.* */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _selector__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./selector */ "./js/selector.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
+﻿;
+
+
+const url = '/api/v1/Venues';
+const urlCity = '/api/v1/Cities';
+const jsonType = 'application/jcon';
+
+(0,_selector__WEBPACK_IMPORTED_MODULE_0__.fillCitiesSelector)();
+
+async function getVenues() {
+    const response = await fetch(url,
+        {
+            method: "GET",
+            headers: { "Accept": jsonType }
+        });
+    if (response.ok === true) {
+
+        const venues = await response.json();
+        let rows = document.querySelector("tbody");
+
+        venues.forEach(venue => {
+            rows.append(row(venue));
+        });
+    }
+}
+
+async function getVenue(id) {
+    const response = await fetch(url + "/" + id,
+        {
+            method: "GET",
+            headers: { "Accept": jsonType }
+        });
+    if (response.ok === true) {
+        const venue = await response.json();
+        const form = document.form["venueForm"];
+        form.elements["id"].value = venue.id;
+        form.elements["name"].value = venue.name;
+        form.elements["address"].value = venue.address;
+        form.elements["cityId"].value = venue.cityId;
+    }
+}
+
+async function createVenue(venueName, venueAddress, citiId) {
+    const response = await fetch(url,
+        {
+            method: "POST",
+            headers: { "Accept": jsonType, "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: venueName,
+                address: venueAddress,
+                cityId: citiId
+            })
+        });
+    if (response.ok === true) {
+        const venue = await response.json();
+        reset();
+        document.querySelector("tbody").append(row(venue));
+    } else {
+        const errorData = await response.json();
+        console.log("error", errorData);
+        if (errorData) {
+
+            if (errorData.errors) {
+
+                if (errorData.error["Name"]) {
+                    addError(errorData.errors["Name"]);
+                }
+            }
+
+            if (errorData["Name"]) {
+                addError(errorData["Name"]);
+            }
+        }
+
+        document.getElementById("error").style.display = "block";
+    }
+}
+
+async function deleteVenue(id) {
+    const response = await fetch(url + "/" + id,
+        {
+            method: "DELETE",
+            headers: { "Accept": jsonType }
+        });
+    if (response.ok === true) {
+        const venue = await response.json();
+        document.querySelector(`tr[data-rowid='${venue.id}']`).remove();
+    }
+}
+
+function reset() {
+    const form = document.forms["venueForm"];
+    form.reset();
+    form.elements["id"].value = 0;
+}
+
+function addError(errors) {
+    errors.forEach(error => {
+        const p = document.createElement("p");
+        p.append(error);
+        document.getElementById("error").append(p);
+    });
+}
+
+function row(venue) {
+
+    const tr = document.createElement("tr");
+    tr.setAttribute("data-rowid", venue.id);
+
+    const nameTd = document.createElement("td");
+    nameTd.append(venue.name);
+    tr.append(nameTd);
+
+    const addressTd = document.createElement("td");
+    addressTd.append(venue.address);
+    tr.append(addressTd);
+
+    const cityIdTd = document.createElement("td");
+    cityIdTd.append(venue.city.name);
+    tr.append(cityIdTd);
+
+    const linksTd = document.createElement("td");
+
+    const removeLink = document.createElement("a");
+    removeLink.setAttribute("data-id", venue.id);
+    removeLink.setAttribute("type", "submit");
+    removeLink.setAttribute("class", "btn btn-sm btn-primary");
+    removeLink.append("Delete");
+    removeLink.addEventListener("click", e => {
+
+        e.preventDefault();
+        deleteVenue(venue.id);
+    });
+
+    linksTd.append(removeLink);
+    tr.appendChild(linksTd);
+
+    return tr;
+}
+
+// send form
+document.forms['venueForm'].addEventListener('submit',
+    async e => {
+        e.preventDefault();
+        document.getElementById('error').innerHTML = '';
+        document.getElementById('error').style.display = 'none';
+    
+        const form = document.forms['venueForm'];
+        const id = parseInt(form.elements['id'].value);
+        const name = form.elements['name'].value;
+        const address = form.elements['address'].value;
+        const cityId = parseInt(form.elements['cities'].value);
+        if (id == 0)
+            await createVenue(name, address, cityId);
+        else
+            editVenue(id, name, address, cityId);
+    });
+
+getVenues();
+
+
 /***/ }),
 
 /***/ "./node_modules/bootstrap-select/dist/js/bootstrap-select.js":
@@ -98,12 +254,6 @@ function createSelector(item) {
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: top-level-this-exports, __webpack_require__, __webpack_exports__, module */
 /***/ (function(module, exports, __webpack_require__) {
-<<<<<<< HEAD
-========
-
->>>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652:Task_1/TicketReSail/TicketReSail/wwwroot/dist/site.entry.js
-=======
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
  * Bootstrap-select v1.13.18 (https://developer.snapappointments.com/bootstrap-select)
@@ -126,10 +276,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 (function ($) {
   'use strict';
 
-<<<<<<< HEAD
-<<<<<<<< HEAD:TicketReSail/TicketReSail/wwwroot/dist/selector.entry.js
-=======
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
   var DISALLOWED_ATTRIBUTES = ['sanitize', 'whiteList', 'sanitizeFn'];
 
   var uriAttrs = [
@@ -3021,177 +3167,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
           // scroll to top and highlight first option
           if (index === that.selectpicker.view.firstHighlightIndex) {
             that.$menuInner[0].scrollTop = 0;
-<<<<<<< HEAD
-========
-/***/ "./node_modules/jquery/dist/jquery.js":
-/*!********************************************!*\
-  !*** ./node_modules/jquery/dist/jquery.js ***!
-  \********************************************/
-/*! unknown exports (runtime-defined) */
-/*! runtime requirements: module, top-level-this-exports, __webpack_exports__ */
-/*! CommonJS bailout: this is used directly at 40:46-50 */
-/*! CommonJS bailout: module.exports is used directly at 18:43-57 */
-/*! CommonJS bailout: module.exports is used directly at 27:2-16 */
-/***/ (function(module, exports) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * jQuery JavaScript Library v3.5.1
- * https://jquery.com/
- *
- * Includes Sizzle.js
- * https://sizzlejs.com/
- *
- * Copyright JS Foundation and other contributors
- * Released under the MIT license
- * https://jquery.org/license
- *
- * Date: 2020-05-04T22:49Z
- */
-( function( global, factory ) {
-
-	"use strict";
-
-	if (  true && typeof module.exports === "object" ) {
-
-		// For CommonJS and CommonJS-like environments where a proper `window`
-		// is present, execute the factory and get jQuery.
-		// For environments that do not have a `window` with a `document`
-		// (such as Node.js), expose a factory as module.exports.
-		// This accentuates the need for the creation of a real `window`.
-		// e.g. var jQuery = require("jquery")(window);
-		// See ticket #14549 for more info.
-		module.exports = global.document ?
-			factory( global, true ) :
-			function( w ) {
-				if ( !w.document ) {
-					throw new Error( "jQuery requires a window with a document" );
-				}
-				return factory( w );
-			};
-	} else {
-		factory( global );
-	}
-
-// Pass this if window is not defined yet
-} )( typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
-
-// Edge <= 12 - 13+, Firefox <=18 - 45+, IE 10 - 11, Safari 5.1 - 9+, iOS 6 - 9.1
-// throw exceptions when non-strict code (e.g., ASP.NET 4.5) accesses strict mode
-// arguments.callee.caller (trac-13335). But as of jQuery 3.0 (2016), strict mode should be common
-// enough that all such attempts are guarded in a try block.
-"use strict";
-
-var arr = [];
-
-var getProto = Object.getPrototypeOf;
-
-var slice = arr.slice;
-
-var flat = arr.flat ? function( array ) {
-	return arr.flat.call( array );
-} : function( array ) {
-	return arr.concat.apply( [], array );
-};
-
-
-var push = arr.push;
-
-var indexOf = arr.indexOf;
-
-var class2type = {};
-
-var toString = class2type.toString;
-
-var hasOwn = class2type.hasOwnProperty;
-
-var fnToString = hasOwn.toString;
-
-var ObjectFunctionString = fnToString.call( Object );
-
-var support = {};
-
-var isFunction = function isFunction( obj ) {
-
-      // Support: Chrome <=57, Firefox <=52
-      // In some browsers, typeof returns "function" for HTML <object> elements
-      // (i.e., `typeof document.createElement( "object" ) === "function"`).
-      // We don't want to classify *any* DOM node as a function.
-      return typeof obj === "function" && typeof obj.nodeType !== "number";
-  };
-
-
-var isWindow = function isWindow( obj ) {
-		return obj != null && obj === obj.window;
-	};
-
-
-var document = window.document;
-
-
-
-	var preservedScriptAttributes = {
-		type: true,
-		src: true,
-		nonce: true,
-		noModule: true
-	};
-
-	function DOMEval( code, node, doc ) {
-		doc = doc || document;
-
-		var i, val,
-			script = doc.createElement( "script" );
-
-		script.text = code;
-		if ( node ) {
-			for ( i in preservedScriptAttributes ) {
-
-				// Support: Firefox 64+, Edge 18+
-				// Some browsers don't support the "nonce" property on scripts.
-				// On the other hand, just using `getAttribute` is not enough as
-				// the `nonce` attribute is reset to an empty string whenever it
-				// becomes browsing-context connected.
-				// See https://github.com/whatwg/html/issues/2369
-				// See https://html.spec.whatwg.org/#nonce-attributes
-				// The `node.getAttribute` check was added for the sake of
-				// `jQuery.globalEval` so that it can fake a nonce-containing node
-				// via an object.
-				val = node[ i ] || node.getAttribute && node.getAttribute( i );
-				if ( val ) {
-					script.setAttribute( i, val );
-				}
-			}
-		}
-		doc.head.appendChild( script ).parentNode.removeChild( script );
-	}
-
-
-function toType( obj ) {
-	if ( obj == null ) {
-		return obj + "";
-	}
-
-	// Support: Android <=2.3 only (functionish RegExp)
-	return typeof obj === "object" || typeof obj === "function" ?
-		class2type[ toString.call( obj ) ] || "object" :
-		typeof obj;
-}
-/* global Symbol */
-// Defining this global in .eslintrc.json would create a danger of using the global
-// unguarded in another place, it seems safer to define global only for this module
->>>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652:Task_1/TicketReSail/TicketReSail/wwwroot/dist/site.entry.js
-=======
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 
             liActiveIndex = that.selectpicker.view.firstHighlightIndex;
           } else {
             activeLi = that.selectpicker.current.data[liActiveIndex];
             offset = activeLi.position - that.sizeInfo.menuInnerHeight;
 
-<<<<<<< HEAD
-<<<<<<<< HEAD:TicketReSail/TicketReSail/wwwroot/dist/selector.entry.js
-=======
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
             updateScroll = offset > scrollTop;
           }
         }
@@ -7945,65 +7926,6 @@ function toType( obj ) {
 })));
 //# sourceMappingURL=bootstrap.js.map
 
-<<<<<<< HEAD
-========
-
-var
-	version = "3.5.1",
-
-	// Define a local copy of jQuery
-	jQuery = function( selector, context ) {
-
-		// The jQuery object is actually just the init constructor 'enhanced'
-		// Need init if jQuery is called (just allow error to be thrown if not included)
-		return new jQuery.fn.init( selector, context );
-	};
-
-jQuery.fn = jQuery.prototype = {
-
-	// The current version of jQuery being used
-	jquery: version,
-
-	constructor: jQuery,
-
-	// The default length of a jQuery object is 0
-	length: 0,
-
-	toArray: function() {
-		return slice.call( this );
-	},
-
-	// Get the Nth element in the matched element set OR
-	// Get the whole matched element set as a clean array
-	get: function( num ) {
-
-		// Return all the elements in a clean array
-		if ( num == null ) {
-			return slice.call( this );
-		}
-
-		// Return just the one element from the set
-		return num < 0 ? this[ num + this.length ] : this[ num ];
-	},
-
-	// Take an array of elements and push it onto the stack
-	// (returning the new matched element set)
-	pushStack: function( elems ) {
-
-		// Build a new jQuery matched element set
-		var ret = jQuery.merge( this.constructor(), elems );
-
-		// Add the old object onto the stack (as a reference)
-		ret.prevObject = this;
-
-		// Return the newly-formed element set
-		return ret;
-	},
-
-	// Execute a callback for every element in the matched set.
-	each: function( callback ) {
-		return jQuery.each( this, callback );
-=======
 
 /***/ }),
 
@@ -8218,7 +8140,6 @@ jQuery.fn = jQuery.prototype = {
 	// Execute a callback for every element in the matched set.
 	each: function( callback ) {
 		return jQuery.each( this, callback );
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 	},
 
 	map: function( callback ) {
@@ -9427,10 +9348,6 @@ setDocument = Sizzle.setDocument = function( node ) {
 			if ( el.querySelectorAll( ":disabled" ).length !== 2 ) {
 				rbuggyQSA.push( ":enabled", ":disabled" );
 			}
-<<<<<<< HEAD
->>>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652:Task_1/TicketReSail/TicketReSail/wwwroot/dist/site.entry.js
-=======
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 
 			// Support: Opera 10 - 11 only
 			// Opera 10-11 does not throw on post-comma invalid pseudos
@@ -9439,42 +9356,11 @@ setDocument = Sizzle.setDocument = function( node ) {
 		} );
 	}
 
-<<<<<<< HEAD
-<<<<<<<< HEAD:TicketReSail/TicketReSail/wwwroot/dist/selector.entry.js
-/***/ "./node_modules/jquery/dist/jquery.js":
-/*!********************************************!*\
-  !*** ./node_modules/jquery/dist/jquery.js ***!
-  \********************************************/
-/*! unknown exports (runtime-defined) */
-/*! runtime requirements: module, top-level-this-exports, __webpack_exports__ */
-/***/ (function(module, exports) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * jQuery JavaScript Library v3.5.1
- * https://jquery.com/
- *
- * Includes Sizzle.js
- * https://sizzlejs.com/
- *
- * Copyright JS Foundation and other contributors
- * Released under the MIT license
- * https://jquery.org/license
- *
- * Date: 2020-05-04T22:49Z
- */
-( function( global, factory ) {
-========
-=======
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 	if ( ( support.matchesSelector = rnative.test( ( matches = docElem.matches ||
 		docElem.webkitMatchesSelector ||
 		docElem.mozMatchesSelector ||
 		docElem.oMatchesSelector ||
 		docElem.msMatchesSelector ) ) ) ) {
-<<<<<<< HEAD
->>>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652:Task_1/TicketReSail/TicketReSail/wwwroot/dist/site.entry.js
-=======
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 
 		assert( function( el ) {
 
@@ -18205,20 +18091,6 @@ jQuery.ajaxPrefilter( "script", function( s ) {
 	}
 } );
 
-<<<<<<< HEAD
-<<<<<<<< HEAD:TicketReSail/TicketReSail/wwwroot/dist/selector.entry.js
-/***/ "./node_modules/popper.js/dist/esm/popper.js":
-/*!***************************************************!*\
-  !*** ./node_modules/popper.js/dist/esm/popper.js ***!
-  \***************************************************/
-/*! namespace exports */
-/*! export default [provided] [no usage info] [missing usage info prevents renaming] */
-/*! other exports [not provided] [no usage info] */
-/*! runtime requirements: __webpack_exports__, __webpack_require__.r, __webpack_require__.g, __webpack_require__.d, __webpack_require__.* */
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-========
-=======
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 // Bind script tag hack transport
 jQuery.ajaxTransport( "script", function( s ) {
 
@@ -18268,10 +18140,6 @@ jQuery.ajaxSetup( {
 
 // Detect, normalize options and install callbacks for jsonp requests
 jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
-<<<<<<< HEAD
->>>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652:Task_1/TicketReSail/TicketReSail/wwwroot/dist/site.entry.js
-=======
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 
 	var callbackName, overwritten, responseContainer,
 		jsonProp = s.jsonp !== false && ( rjsonp.test( s.url ) ?
@@ -18946,15 +18814,6 @@ return jQuery;
 
 /***/ }),
 
-<<<<<<< HEAD
-/***/ "./css/site.css":
-/*!**********************!*\
-  !*** ./css/site.css ***!
-  \**********************/
-/*! namespace exports */
-/*! exports [not provided] [no usage info] */
-/*! runtime requirements: __webpack_require__.r, __webpack_exports__, __webpack_require__.* */
-=======
 /***/ "./node_modules/popper.js/dist/esm/popper.js":
 /*!***************************************************!*\
   !*** ./node_modules/popper.js/dist/esm/popper.js ***!
@@ -18963,86 +18822,10 @@ return jQuery;
 /*! export default [provided] [no usage info] [missing usage info prevents renaming] */
 /*! other exports [not provided] [no usage info] */
 /*! runtime requirements: __webpack_exports__, __webpack_require__.r, __webpack_require__.g, __webpack_require__.d, __webpack_require__.* */
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-<<<<<<< HEAD
-// extracted by mini-css-extract-plugin
-
-
-/***/ }),
-
-/***/ "./node_modules/bootstrap-select/dist/css/bootstrap-select.css":
-/*!*********************************************************************!*\
-  !*** ./node_modules/bootstrap-select/dist/css/bootstrap-select.css ***!
-  \*********************************************************************/
-/*! namespace exports */
-/*! exports [not provided] [no usage info] */
-/*! runtime requirements: __webpack_require__.r, __webpack_exports__, __webpack_require__.* */
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
-/***/ }),
-
-/***/ "./node_modules/bootstrap/dist/css/bootstrap.css":
-/*!*******************************************************!*\
-  !*** ./node_modules/bootstrap/dist/css/bootstrap.css ***!
-  \*******************************************************/
-/*! namespace exports */
-/*! exports [not provided] [no usage info] */
-/*! runtime requirements: __webpack_require__.r, __webpack_exports__, __webpack_require__.* */
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
-/***/ })
-
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		if(__webpack_module_cache__[moduleId]) {
-/******/ 			return __webpack_module_cache__[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => module['default'] :
-/******/ 				() => module;
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-=======
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => __WEBPACK_DEFAULT_EXPORT__
 /* harmony export */ });
@@ -21702,7 +21485,6 @@ Popper.Defaults = Defaults;
 /******/ 			__webpack_require__.d(getter, { a: getter });
 /******/ 			return getter;
 /******/ 		};
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
@@ -21717,8 +21499,6 @@ Popper.Defaults = Defaults;
 /******/ 		};
 /******/ 	})();
 /******/ 	
-<<<<<<< HEAD
-=======
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
 /******/ 		__webpack_require__.g = (function() {
@@ -21731,7 +21511,6 @@ Popper.Defaults = Defaults;
 /******/ 		})();
 /******/ 	})();
 /******/ 	
->>>>>>> 7770275ebcc575b80cc83e3f6d5e967b31da0652
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
@@ -21751,8 +21530,8 @@ Popper.Defaults = Defaults;
 /************************************************************************/
 /******/ 	// startup
 /******/ 	// Load entry module
-/******/ 	__webpack_require__("./js/selector.js");
+/******/ 	__webpack_require__("./js/venue.js");
 /******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;
-//# sourceMappingURL=selector.entry.js.map
+//# sourceMappingURL=venue.entry.js.map
