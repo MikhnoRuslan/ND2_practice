@@ -28,6 +28,5 @@ namespace TicketReSail.DAL.Model
         public int CategoryId { get; set; }
         [Required]
         public Category Category { get; set; }
-        public ICollection<Ticket> Tickets { get; set; }
     }
 }

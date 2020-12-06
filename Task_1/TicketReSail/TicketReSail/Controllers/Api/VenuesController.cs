@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TicketReSail.Controllers.Api.Models;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
 using TicketReSail.Core.Queries;
@@ -16,14 +17,16 @@ namespace TicketReSail.Controllers.Api
     public class VenuesController : ControllerBase
     {
         private readonly IVenueService _venueService;
+        private readonly ICityService _cityService;
         private readonly IMapper _mapper;
         private readonly IAction<VenueDTO, Venue> _action;
 
-        public VenuesController(IVenueService venueService, IMapper mapper, IAction<VenueDTO, Venue> action)
+        public VenuesController(IVenueService venueService, IMapper mapper, IAction<VenueDTO, Venue> action, ICityService cityService)
         {
             _venueService = venueService;
             _mapper = mapper;
             _action = action;
+            _cityService = cityService;
         }
 
         /// <summary>
@@ -31,23 +34,15 @@ namespace TicketReSail.Controllers.Api
         /// </summary>
         /// <param name="venueQuery"> Request cityId </param>
         /// <returns> Returns a filtered query by city </returns>
-        //[HttpGet]
-        //[ProducesResponseType(typeof(IEnumerable<VenueDTO>), StatusCodes.Status200OK)]
-        //public async Task<IEnumerable<VenueDTO>> GetVenuesByCity([FromQuery] VenueQuery venueQuery)
-        //{
-        //    return _mapper.Map<IEnumerable<VenueDTO>>(await _venueService.GetVenuesByQuery(venueQuery));
-        //}
-
-        /// <summary>
-        /// Get all venues
-        /// </summary>
-        /// <returns> List of venues </returns>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<EventResource>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IEnumerable<Venue>> GetVenues()
+        public async Task<IActionResult> GetVenuesByCity([FromQuery] VenueQuery venueQuery)
         {
-            return await _venueService.GetVenues();
+            var venues = await _venueService.GetVenuesByQuery(venueQuery);
+            var result = _mapper.Map<IEnumerable<VenueResource>>(venues);
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -77,6 +72,7 @@ namespace TicketReSail.Controllers.Api
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+
         public async Task<IActionResult> CreateVenue(VenueViewModel venueViewModel)
         {
             //TODO validation of null
@@ -90,6 +86,7 @@ namespace TicketReSail.Controllers.Api
             if (operationDetails.Succeeded)
             {
                 venueViewModel.Id = _venueService.GetVenueIdByName(venueDTO.Name);
+                venueViewModel.City = await _cityService.GetCityBuId(venueViewModel.CityId);
                 return CreatedAtAction("GetVenue", new { id = venueViewModel.Id }, venueViewModel);
             }
             else
@@ -146,7 +143,7 @@ namespace TicketReSail.Controllers.Api
             {
                 Name = venueView.Name,
                 Address = venueView.Address,
-                CityId = venueView.Id
+                CityId = venueView.CityId
             };
 
             return venueDTO;

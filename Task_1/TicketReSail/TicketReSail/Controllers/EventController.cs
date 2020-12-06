@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MailKit.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using TicketReSail.Core.Enuns;
 using TicketReSail.Core.Interface;
 using TicketReSail.Core.ModelDTO;
 using TicketReSail.Core.Queries;
@@ -30,25 +33,29 @@ namespace TicketReSail.Controllers
             _cityService = cityService;
         }
 
-        //public async Task<IActionResult> Index(int? categoryId)
-        //{
-        //    var categories = (await _categoryService.GetCategories()).ToList()
-        //        .Select(c => new Category { Id = c.Id, Name = c.Name }).ToList();
+        public async Task<IActionResult> Index()
+        {
+            var model = new EventsViewModel
+            {
+                Categories = await _categoryService.GetCategories(),
+                Cities = await _cityService.GetCities(),
 
-        //    categories.Insert(0, new Category { Id = 0, Name = "All" });
+                SortBy = new SelectList(new List<SortBy>()
+                {
+                    SortBy.Date,
+                    SortBy.Venue,
+                    SortBy.City
+                }),
 
-        //    var eventsViewModel = new EventsViewModel
-        //    {
-        //        Categories = categories,
-        //        Events = (await _eventService.GetEvents()).ToArray()
-        //    };
-
-        //    if (categoryId != null && categoryId > 0)
-        //        eventsViewModel.Events = (await _eventService.GetEvents())
-        //            .Where(e => e.Category.Id == categoryId).ToArray();
-
-        //    return View(eventsViewModel);
-        //}
+                SortOrder = new SelectList(new List<SortOrder>()
+                {
+                    SortOrder.None,
+                    SortOrder.Ascending,
+                    SortOrder.Descending
+                })
+            };
+            return View(model);
+        }
 
         public async Task<IActionResult> Details([FromRoute] int id)
         {

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TicketReSail.DAL.Model
 {
@@ -9,7 +8,5 @@ namespace TicketReSail.DAL.Model
 
         [Required(ErrorMessage = "Enter name category")]
         public string Name { get; set; }
-
-        public ICollection<Event> Events { get; set; }
     }
 }

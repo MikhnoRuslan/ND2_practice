@@ -17,6 +17,5 @@ namespace TicketReSail.DAL.Model
         public int CityId { get; set; }
         [Required]
         public City City { get; set; }
-        public ICollection<Event> Tickets { get; set; }
     }
 }

@@ -12,7 +12,5 @@ namespace TicketReSail.DAL.Model
 
         public int LocalizationId { get; set; }
         public Localization Localization { get; set; }
-
-        public ICollection<Ticket> Tickets { get; set; }
     }
 }

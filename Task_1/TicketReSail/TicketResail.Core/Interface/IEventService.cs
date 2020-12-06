@@ -11,5 +11,6 @@ namespace TicketReSail.Core.Interface
         Task<PagedResult<Event>> GetEvents(EventQuery eventQuery);
         string GetEventNameByTicketId(int ticketId);
         Task<IEnumerable<Ticket>> GetTicketsByIdEvents(int id);
+        Task<List<string>> Search(string term);
     }
 }

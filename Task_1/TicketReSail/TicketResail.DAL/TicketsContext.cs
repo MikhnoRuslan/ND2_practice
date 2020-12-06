@@ -26,23 +26,13 @@ namespace TicketReSail.DAL
 
             model.Entity<City>().ToTable("Cities");
 
-            model.Entity<Event>().ToTable("Events")
-                .HasOne(e => e.Category)
-                .WithMany(c => c.Events);
+            model.Entity<Event>().ToTable("Events");
 
             model.Entity<Order>().ToTable("Orders");
 
-            model.Entity<Ticket>().ToTable("Tickets")
-                .HasOne(t => t.Event)
-                .WithMany(e => e.Tickets);
+            model.Entity<Ticket>().ToTable("Tickets");
 
-            model.Entity<Ticket>()
-                .HasOne(t => t.User)
-                .WithMany(u => u.Tickets);
-
-            model.Entity<Venue>().ToTable("Venues")
-                .HasOne(v => v.City)
-                .WithMany(c => c.Venues);
+            model.Entity<Venue>().ToTable("Venues");
 
             model.Entity<Localization>();
         }

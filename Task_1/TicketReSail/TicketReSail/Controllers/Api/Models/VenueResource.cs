@@ -1,8 +1,8 @@
 ﻿using TicketReSail.DAL.Model;
 
-namespace TicketReSail.Models
+namespace TicketReSail.Controllers.Api.Models
 {
-    public class VenueViewModel
+    public class VenueResource
     {
         public int Id { get; set; }
         public string Name { get; set; }

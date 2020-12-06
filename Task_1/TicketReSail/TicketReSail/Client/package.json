@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "bootstrap": "4.5.3",
-    "bootstrap-select": "1.13.18",
+    "bootstrap-select": "^1.13.18",
     "jquery": "3.5.1",
     "jquery-validation": "1.19.2",
     "jquery-validation-unobtrusive": "3.2.11",

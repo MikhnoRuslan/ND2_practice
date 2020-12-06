@@ -10,10 +10,10 @@ namespace TicketReSail.Core.Helpers
             if (query.PageSize <= 0)
                 query.PageSize = 10;
 
-            if (query.PageSize <= 0)
-                query.PageSize = 1;
+            if (query.Page <= 0)
+                query.Page = 1;
 
-            return queryable.Skip(query.PageSize * (query.PageSize - 1)).Take(query.PageSize);
+            return queryable.Skip(query.PageSize * (query.Page - 1)).Take(query.PageSize);
         }
     }
 }
