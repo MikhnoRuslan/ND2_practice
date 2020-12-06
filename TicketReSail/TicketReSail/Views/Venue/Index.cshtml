@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewData["Title"] = "Create city";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <div>
+                <div id="error" class="alert alert-danger" style="display:none;"></div>
+                <form name="venueForm">
+                    <input type="hidden" name="id" value="0" />
+                    <div class="form-group">
+                        <label for="name">Venue:</label>
+                        <input name="name" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address:</label>
+                        <input name="address" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="cityId">City:</label>
+                        <select id="cities" name="cities" class="form-control">
+                            <option disabled selected>Choose city</option>
+                        </select>
+                    </div>
+                    <hr />
+                    <div class="form-group">
+                        <button type="submit" id="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-9">
+            <table class="table">
+                <tr>
+                    <td>Name</td>
+                    <td>Address</td>
+                    <td>City</td>
+                </tr>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Admin" asp-action="Index">Back to List</a>
+</div>
+
+<script type="text/javascript" src="dist/venue.entry.js"></script>

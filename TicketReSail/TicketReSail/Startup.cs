@@ -1,0 +1,148 @@
+using System;
+using System.IO;
+using System.Reflection;
+using System.Text.Json.Serialization;
+using AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using TicketReSail.Core.Infrastructure;
+using TicketReSail.Core.Interface;
+using TicketReSail.Core.Services;
+using TicketReSail.DAL;
+using TicketReSail.DAL.Model;
+using TicketReSail.Mapper;
+
+namespace TicketReSail
+{
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvc().AddJsonOptions(opts =>
+                opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
+                .AddRazorRuntimeCompilation();
+
+            services.AddControllersWithViews()
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+                .AddDataAnnotationsLocalization();
+
+            services.AddLocalization(opt => opt.ResourcesPath = "Resources");
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(opts =>
+                {
+                    opts.LoginPath = "/User/Login";
+                    opts.AccessDeniedPath = "/User/Login";
+                    opts.Cookie.Name = "AuthDemo";
+                });
+
+            services.AddDbContext<TicketsContext>(o =>
+                o.UseSqlServer(Configuration.GetConnectionString("TicketConnection")));
+
+            services.AddDefaultIdentity<User>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<TicketsContext>();
+
+            services.Configure<IdentityOptions>(opts =>
+            {
+                opts.User.RequireUniqueEmail = true;
+            });
+
+            services.AddScoped<IdentityRole>();
+            services.AddScoped<IEventService, EventService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ITickerService, TicketService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IVenueService, VenueService>();
+            services.AddScoped<ICityService, CityService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ILocalizationService, LocalizationService>();
+
+            services.Scan(scan => scan
+                .FromAssemblyOf<OperationDetails>()
+                .AddClasses(classes => classes
+                    .AssignableTo(typeof(IAction<,>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
+
+            services.AddControllers().AddXmlDataContractSerializerFormatters();
+
+            services.AddSwaggerGen(c =>
+            {
+                var file = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var path = Path.Combine(AppContext.BaseDirectory, file);
+                c.IncludeXmlComments(path);
+            });
+
+            services.AddAutoMapper(typeof(MappingProfile));
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            var supportedLocales = new[] { "en", "ru", "ru-BY" };
+
+            var localizationOptions = new RequestLocalizationOptions()
+                .SetDefaultCulture(supportedLocales[0])
+                .AddSupportedCultures(supportedLocales)
+                .AddSupportedUICultures(supportedLocales);
+
+            app.UseRequestLocalization(localizationOptions);
+
+            app.UseSwagger();
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TicketReSail");
+            });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "/{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapControllers();
+            });
+        }
+    }
+}

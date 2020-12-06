@@ -1,0 +1,71 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@model EventsViewModel
+
+@{ ViewData["Title"] = Localizer["Events"]; }
+
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <div>
+                <div id="error" class="alert alert-danger" style="display:none;"></div>
+                <div>
+                    <div>
+                        <h2>Filter</h2>
+                    </div>
+                    <label asp-for="Categories">Category:</label>
+                    <select id="categories" name="categories" multiple class="selectpicker"></select>
+                </div>
+                <div>
+                    <label asp-for="Cities">City:</label>
+                    <select id="cities" name="cities" multiple class="selectpicker"></select>
+                </div>
+                <div>
+                    <label asp-for="Venues">Venue:</label>
+                    <select id="venues" name="venues" multiple class="selectpicker"></select>
+                </div>
+                <div>
+                    <label asp-for="FromDateTime">From date:</label>
+                    @Html.TextBoxFor(e => e.FromDateTime, new { type = "date", id = "fromDateTime", @class = "form-control d-inline" })
+                </div>
+                <div>
+                    <label asp-for="ToDateTime">To date:</label>
+                    @Html.TextBoxFor(e => e.FromDateTime, new { type = "date", id = "toDateTime", @class = "form-control d-inline" })
+                </div>
+                <div>
+                    <label class="control-label">Sort:</label>
+                    @Html.DropDownList("sortOrder", Model.SortOrder, new { id = "sortOrder", @class = "form-control" })
+                </div>
+                <div>
+                    <label class="control-label">Sort by:</label>
+                    @Html.DropDownList("sortBy", Model.SortBy, new { id = "sortBy", @class = "form-control" })
+                </div>
+                <div>
+                    <label asp-for="EventName">Search</label>
+                    <input id="eventName" name="eventName" type="search" class="form-control" placeholder="Enter event name...">
+                </div>
+            </div>
+        </div>
+        <div class="col-9">
+            <div id="events" class="row row-cols-3"></div>
+            <nav>
+                <ul class="pagination justify-content-center"></ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#eventName").autocomplete({
+                source: 'api/v1/events/search',
+                minLength: 2,
+                maxItemsToShow: 10
+            });
+        });
+    </script>
+}
+<script src="dist/event.entry.js" type="module" defer></script>
