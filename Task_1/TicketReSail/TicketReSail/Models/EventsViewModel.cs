@@ -23,6 +23,6 @@ namespace TicketReSail.Models
         public IEnumerable<City> Cities { get; set; }
         public SelectList SortOrder { get; set; }
         public SelectList SortBy { get; set; }
-        public string searchText { get; set; }
+        public string EventName { get; set; }
     }
 }

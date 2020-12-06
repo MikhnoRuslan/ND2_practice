@@ -8,7 +8,8 @@ module.exports = {
         category: './js/category.js',
         city: './js/city.js',
         venue: './js/venue.js',
-        event: './js/event.js'
+        event: './js/event.js',
+        selector: './js/selector.js'
     },
     output: {
         filename: '[name].entry.js',

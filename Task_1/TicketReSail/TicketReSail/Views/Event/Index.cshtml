@@ -41,8 +41,8 @@
                     @Html.DropDownList("sortBy", Model.SortBy, new { id = "sortBy", @class = "form-control" })
                 </div>
                 <div>
-                    <label asp-for="Name">Search</label>
-                    <input id="postTitle" name="eventName" type="search" class="form-control" placeholder="Enter event name...">
+                    <label asp-for="EventName">Search</label>
+                    <input id="eventName" name="eventName" type="search" class="form-control" placeholder="Enter event name...">
                 </div>
             </div>
         </div>
@@ -60,7 +60,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#postTitle").autocomplete({
+            $("#eventName").autocomplete({
                 source: 'api/v1/events/search',
                 minLength: 2,
                 maxItemsToShow: 10

@@ -1,6 +1,7 @@
 import $, { get } from 'jquery';
-import "bootstrap";
-import "bootstrap-select";
+import 'bootstrap';
+import 'bootstrap-select';
+import { fillCategoriesSelector, fillCitiesSelector, fillVenuesSelector } from './selector';
 
 const filters = {
     pageSize: 6,
@@ -25,7 +26,7 @@ function createEvent(event) {
                     <div class="card-body">
                         <img src="/event/getimage/${event.id}" alt="${event.name}" class="card-img-top img-fluid" />
                         <strong>
-                             <a href='event/details/${event.id}'>${event.name}</a>
+                             <a href='event/details/${event.id}'>${event.eventName}</a>
                         </strong>
                         <br><h8>The date of the: ${event.dateTime} </h8>
                         <br><h8>City: ${event.venue.city.name}</h8>
@@ -38,7 +39,7 @@ function createEvent(event) {
 $(document).ready(function() { 
     getEvents();
 
-    $("#postTitle").on('change', function(){
+    $("#eventName").on('change', function(){
         filters.eventName = $(this).val();
         getEvents();
     })
@@ -54,7 +55,7 @@ $(document).ready(function() {
         
         filters.venues = [];
 
-        fillVenuesSelector();
+        fillVenuesSelector(filterVenue);
         getEvents();
     })
 
@@ -138,45 +139,6 @@ function dateTime(date) {
         return day + "." + month + "." + year;
 }
 
-function createSelector(item) {
-    return `<option value="${item.id}">${item.name}</option>`
-};
-
-function fillCategoriesSelector() {
-    $.ajax({
-        url: "/api/v1/categories",
-        traditional: true,
-        success: function (data) {
-            $("#categories").empty().append($.map(data, createSelector));
-            $("#categories").selectpicker("refresh");
-        }
-    });
-}
-
 fillCategoriesSelector();
 
-function fillCitiesSelector() {
-    $.ajax({
-        url: "/api/v1/cities",
-        traditional: true,
-        success: function(data) {
-            $("#cities").empty().append($.map(data, createSelector));
-            $("#cities").selectpicker("refresh");
-        }
-    })
-}
-
 fillCitiesSelector();
-
-function fillVenuesSelector() {
-    $.ajax({
-        url: "/api/v1/venues",
-        traditional: true,
-        data: filterVenue,
-        success: function(data) {
-            $("#venues").empty().append($.map(data, createSelector));
-            $("#venues").selectpicker("refresh");
-        }
-    })
-}
-

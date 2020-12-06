@@ -1,26 +1,11 @@
-﻿const url = "/api/v1/Venues";
-const jsonType = "application/jcon";
+﻿import { fillCitiesSelector } from './selector';
+import $ from 'jquery';
 
-async function fillCitySelector() {
-    const response = await fetch("/api/v1/cities",
-        {
-            method: "GET",
-            headers: { 'Accept': jsonType },
-        });
-    if (response.ok === true) {
+const url = '/api/v1/Venues';
+const urlCity = '/api/v1/Cities';
+const jsonType = 'application/jcon';
 
-        const cities = await response.json();
-        let selector = document.querySelector('#cities');
-        for (const city of cities) {
-            const option = document.createElement('option');
-            option.value = city.id;
-            option.append(city.name);
-            selector.append(option);
-        }
-    }
-}
-
-fillCitySelector();
+fillCitiesSelector();
 
 async function getVenues() {
     const response = await fetch(url,
@@ -154,19 +139,19 @@ function row(venue) {
 }
 
 // send form
-document.forms["venueForm"].addEventListener("submit",
-    e => {
+document.forms['venueForm'].addEventListener('submit',
+    async e => {
         e.preventDefault();
-        document.getElementById("error").innerHTML = "";
-        document.getElementById("error").style.display = "none";
+        document.getElementById('error').innerHTML = '';
+        document.getElementById('error').style.display = 'none';
     
-        const form = document.forms["venueForm"];
-        const id = form.elements["id"].value;
-        const name = form.elements["name"].value;
-        const address = form.elements["address"].value;
-        const cityId = form.selector["cityId"].value;
+        const form = document.forms['venueForm'];
+        const id = parseInt(form.elements['id'].value);
+        const name = form.elements['name'].value;
+        const address = form.elements['address'].value;
+        const cityId = parseInt(form.elements['cities'].value);
         if (id == 0)
-            createVenue(name, address, cityId);
+            await createVenue(name, address, cityId);
         else
             editVenue(id, name, address, cityId);
     });

@@ -17,14 +17,16 @@ namespace TicketReSail.Controllers.Api
     public class VenuesController : ControllerBase
     {
         private readonly IVenueService _venueService;
+        private readonly ICityService _cityService;
         private readonly IMapper _mapper;
         private readonly IAction<VenueDTO, Venue> _action;
 
-        public VenuesController(IVenueService venueService, IMapper mapper, IAction<VenueDTO, Venue> action)
+        public VenuesController(IVenueService venueService, IMapper mapper, IAction<VenueDTO, Venue> action, ICityService cityService)
         {
             _venueService = venueService;
             _mapper = mapper;
             _action = action;
+            _cityService = cityService;
         }
 
         /// <summary>
@@ -42,18 +44,6 @@ namespace TicketReSail.Controllers.Api
 
             return Ok(result);
         }
-
-        /// <summary>
-        /// Get all venues
-        /// </summary>
-        /// <returns> List of venues </returns>
-        //[HttpGet]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //public async Task<IEnumerable<Venue>> GetVenues()
-        //{
-        //    return await _venueService.GetVenues();
-        //}
 
         /// <summary>
         /// Get venue by id
@@ -83,8 +73,6 @@ namespace TicketReSail.Controllers.Api
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        //не работает. не получается передать id города
-
         public async Task<IActionResult> CreateVenue(VenueViewModel venueViewModel)
         {
             //TODO validation of null
@@ -98,6 +86,7 @@ namespace TicketReSail.Controllers.Api
             if (operationDetails.Succeeded)
             {
                 venueViewModel.Id = _venueService.GetVenueIdByName(venueDTO.Name);
+                venueViewModel.City = await _cityService.GetCityBuId(venueViewModel.CityId);
                 return CreatedAtAction("GetVenue", new { id = venueViewModel.Id }, venueViewModel);
             }
             else
